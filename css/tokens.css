@@ -1,0 +1,111 @@
+/*
+  DESIGN TOKENS
+  Every colour, font, size, space and shape decision lives in this file.
+  css/page.css only reads these variables, so restyling starts here.
+  The second and third blocks redefine the colour tokens for dark mode.
+  Category colours are looked up by category id: a category with id "roman"
+  uses --category-roman. A missing token falls back to --category-default.
+*/
+:root{
+  /* Colour: surfaces and text */
+  --color-page:#ECEFF5;
+  --color-surface:#FFFFFF;
+  --color-surface-alt:#F4F6FB;
+  --color-text:#0F1730;
+  --color-text-muted:#55607A;
+  --color-border:#D3DAE8;
+  --color-focus:#0E8F8C;
+  --color-highlight:#0E8F8C;
+  --color-overlay:rgba(10,15,31,.6);
+  --color-on-overlay:#FFFFFF;
+  --color-letterbox:#000000;
+
+  /* Colour: categories (one per category id in content/trips.json) */
+  --category-default:#55607A;
+  --category-roman:#B3363F;
+  --category-byzantine:#6B3AA3;
+  --category-ottoman:#1E50D2;
+  --category-modern:#0B7A5A;
+  --category-food:#B45309;
+
+  /* Fonts (the Google Fonts link lives in index.html) */
+  --font-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --font-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-label:'DM Mono',ui-monospace,'SF Mono',Menlo,monospace;
+
+  /* Type scale */
+  --text-label:.72rem;
+  --text-small:.85rem;
+  --text-body:1rem;
+  --text-summary:.95rem;
+  --text-card-title:1.4rem;
+  --text-destination:1.4rem;
+  --text-section:1.6rem;
+  --text-trip:2rem;
+  --text-stat:2.1rem;
+  --text-name:clamp(2.5rem,8vw,3.75rem);
+  --tracking-label:.1em;
+
+  /* Spacing */
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:24px;
+  --space-6:32px;
+  --space-7:44px;
+
+  /* Shape */
+  --radius-card:16px;
+  --radius-badge:12px;
+  --radius-pill:999px;
+  --border-width:1px;
+
+  /* Layout */
+  --content-max:1040px;
+  --gutter:16px;
+  --card-min:290px;
+  --media-ratio:4/5;
+  --media-ratio-placeholder:3/2;
+
+  /* Motion */
+  --motion-fast:.2s;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --color-page:#0A0F1F;
+    --color-surface:#121A30;
+    --color-surface-alt:#18223D;
+    --color-text:#E8ECF8;
+    --color-text-muted:#9AA5C0;
+    --color-border:#25304D;
+    --color-focus:#41D1CB;
+    --color-highlight:#41D1CB;
+    --category-default:#9AA5C0;
+    --category-roman:#F0808A;
+    --category-byzantine:#BE98F2;
+    --category-ottoman:#7DA2FF;
+    --category-modern:#5FD2A7;
+    --category-food:#F5B36B;
+    color-scheme:dark;
+  }
+}
+
+:root[data-theme="dark"]{
+  --color-page:#0A0F1F;
+  --color-surface:#121A30;
+  --color-surface-alt:#18223D;
+  --color-text:#E8ECF8;
+  --color-text-muted:#9AA5C0;
+  --color-border:#25304D;
+  --color-focus:#41D1CB;
+  --color-highlight:#41D1CB;
+  --category-default:#9AA5C0;
+  --category-roman:#F0808A;
+  --category-byzantine:#BE98F2;
+  --category-ottoman:#7DA2FF;
+  --category-modern:#5FD2A7;
+  --category-food:#F5B36B;
+  color-scheme:dark;
+}

@@ -1,0 +1,102 @@
+{
+  "profile": {
+    "initial": "W",
+    "eyebrow": "Wei’s travel log",
+    "tagline": "Every stop of the trip, kept as a card.",
+    "categoryLabel": "Tags",
+    "title": "Turkey Trip"
+  },
+  "categories": [
+    {
+      "id": "roman",
+      "label": "Roman"
+    },
+    {
+      "id": "byzantine",
+      "label": "Byzantine"
+    },
+    {
+      "id": "ottoman",
+      "label": "Ottoman"
+    },
+    {
+      "id": "modern",
+      "label": "Modern day"
+    },
+    {
+      "id": "food",
+      "label": "Food"
+    }
+  ],
+  "trips": [
+    {
+      "id": "turkey",
+      "name": "Türkiye",
+      "dates": "Oct 2026",
+      "destinations": [
+        "istanbul",
+        "antalya"
+      ],
+      "days": [
+        {
+          "date": "2026-10-25",
+          "title": "City tour"
+        },
+        {
+          "date": "2026-10-26",
+          "title": "More of the old city"
+        },
+        {
+          "date": "2026-10-27",
+          "title": "Asian side and Beyoğlu"
+        },
+        {
+          "date": "2026-10-29",
+          "title": "Republic Square and old town"
+        },
+        {
+          "date": "2026-10-30",
+          "title": "Perge and Aspendos"
+        },
+        {
+          "date": "2026-10-31",
+          "title": "Side"
+        },
+        {
+          "date": "2026-11-05",
+          "title": "Olympos"
+        }
+      ]
+    }
+  ],
+  "fieldNotes": [
+    {
+      "label": "Lucky numbers",
+      "text": "Seven is the number most tied to luck in Turkish culture, with three and forty close behind. The blue nazar boncuğu bead is the charm against the evil eye."
+    },
+    {
+      "label": "Two continents",
+      "text": "About 97% of Türkiye sits in Asia. The Bosphorus splits Istanbul in two, and every Istanbul stop so far is on the European side."
+    },
+    {
+      "label": "Counting minarets",
+      "text": "Mecca’s Masjid al-Haram is reported to have 13 minarets today. Sources disagree, and older ones say seven or nine."
+    },
+    {
+      "label": "Romans, later called Byzantines",
+      "text": "Byzantine is a later label. The empire in Constantinople called itself Roman until 1453, which is why Constantine XI could still appeal to the Latin West, such as Venice, Genoa and the Pope, for help against the Ottomans."
+    },
+    {
+      "label": "Why the theatres look alike",
+      "text": "Mime and pantomime were the crowd-pleasers of the imperial stage. Side’s theatre got a wall around its orchestra in late Roman times, turning it into an arena for gladiators and animal shows."
+    },
+    {
+      "label": "Aspendos hours",
+      "text": "In October Aspendos is open until 19:00 with the last ticket at 18:30. From November it closes at 17:00, last ticket 16:30. Hours can change, so check before going."
+    },
+    {
+      "label": "Pomegranate town",
+      "text": "Side’s name is said to come from an ancient local word for pomegranate, and the city took the fruit as its symbol."
+    }
+  ]
+}

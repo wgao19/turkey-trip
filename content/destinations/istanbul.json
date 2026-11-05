@@ -1,0 +1,427 @@
+{
+  "id": "istanbul",
+  "name": "Istanbul",
+  "dates": "25–27 Oct",
+  "memories": [
+    {
+      "id": "obelisk-of-theodosius",
+      "title": "Obelisk of Theodosius",
+      "area": "Sultanahmet Square",
+      "category": "roman",
+      "period": "c. 1450 BCE · raised 390 CE",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "collected",
+      "emblem": "obelisk",
+      "summary": "A 3,500-year-old Egyptian obelisk, carved for Thutmose III and shipped to Constantinople by Theodosius I.",
+      "details": [
+        "About 19 m tall today. Only the top third survived the journey, so it once stood nearly 30 m.",
+        "The Roman marble base shows Theodosius and his family watching the races. A Greek inscription runs across the lower block.",
+        "The hieroglyphs on the shaft are still crisp."
+      ],
+      "media": [
+        {
+          "file": "photos/obelisk-1.jpg",
+          "alt": "The Obelisk of Theodosius with a Blue Mosque minaret rising behind it",
+          "focus": "55% 35%"
+        },
+        {
+          "file": "photos/obelisk-2.jpg",
+          "alt": "The marble base of the obelisk, carved with Theodosius and his court watching the races",
+          "focus": "50% 40%"
+        }
+      ],
+      "geo": [
+        41.006,
+        28.976
+      ]
+    },
+    {
+      "id": "hagia-sophia",
+      "title": "Hagia Sophia",
+      "area": "Sultanahmet",
+      "category": [
+        "byzantine",
+        "ottoman"
+      ],
+      "period": "532–537 CE · Ottoman from 1453",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "partial",
+      "statusLabel": "Seen from outside",
+      "emblem": "hagia",
+      "summary": "Justinian’s cathedral of Holy Wisdom, built in under six years, and an Ottoman mosque from 1453. Seen from outside; the inside is saved for another day.",
+      "details": [
+        "The dome is about 31 m wide and 55 m high. In your photo it is wrapped in scaffolding.",
+        "Still to find inside: the Deësis mosaic, the Omphalion in the floor, the Weeping Column and the Viking graffiti.",
+        "Cathedral, then mosque, then a museum from 1935, and a mosque again since 2020."
+      ],
+      "media": [
+        {
+          "file": "photos/hagia-sophia-1.jpg",
+          "alt": "Hagia Sophia seen across the park, with scaffolding around the dome",
+          "focus": "40% 50%"
+        }
+      ],
+      "geo": [
+        41.009,
+        28.98
+      ]
+    },
+    {
+      "id": "blue-mosque",
+      "title": "Blue Mosque",
+      "area": "Sultanahmet",
+      "category": "ottoman",
+      "period": "1609–1616",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "collected",
+      "emblem": "blue",
+      "summary": "Sultan Ahmed I’s mosque, lined with more than 20,000 hand-painted İznik tiles.",
+      "details": [
+        "Six minarets was unusual for the time. The popular story says the architect heard altı (six) when the sultan asked for altın (gold).",
+        "An iron chain over the courtyard door made even a mounted sultan lower his head.",
+        "It is an active mosque, so visits pause at prayer times."
+      ],
+      "media": [
+        {
+          "file": "photos/blue-mosque-1.jpg",
+          "alt": "The Blue Mosque courtyard with its arcade, cascading domes and tall minarets under a grey sky",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/blue-mosque-2.jpg",
+          "alt": "Selfie of Wei and Szu Ker in the Blue Mosque courtyard with the domes and minarets behind",
+          "takenAt": "2026-10-25T11:45:57+03:00",
+          "geo": [
+            41.006,
+            28.977
+          ]
+        },
+        {
+          "file": "photos/blue-mosque-3.jpg",
+          "alt": "The Blue Mosque courtyard, domes and two minarets under grey cloud",
+          "takenAt": "2026-10-25T11:29:04+03:00",
+          "geo": [
+            41.006,
+            28.977
+          ]
+        }
+      ],
+      "geo": [
+        41.005,
+        28.977
+      ]
+    },
+    {
+      "id": "basilica-cistern",
+      "title": "Basilica Cistern",
+      "area": "Sultanahmet",
+      "category": "byzantine",
+      "period": "c. 532 CE",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "collected",
+      "emblem": "cistern",
+      "summary": "A sunken Byzantine water store, about 138 m by 65 m, held up by 336 marble columns.",
+      "details": [
+        "Two columns in the far corner rest on Medusa heads, one sideways and one upside down. Nobody knows why. Coins cover the floor around the upside-down one.",
+        "Forgotten for centuries, until Petrus Gyllius traced it in 1545 after locals pulled fish up through their basement floors.",
+        "Carp swim in the shallow water. It also appears in From Russia with Love."
+      ],
+      "media": [
+        {
+          "file": "photos/cistern-1.jpg",
+          "alt": "An upside-down Medusa head at the foot of a column in the Basilica Cistern, with coins scattered around it",
+          "focus": "35% 50%"
+        },
+        {
+          "file": "photos/basilica-cistern-2.jpg",
+          "alt": "An upside-down Medusa head at the base of a column, coins in the water around it",
+          "takenAt": "2026-10-25T17:01:34+03:00"
+        },
+        {
+          "file": "photos/basilica-cistern-3.jpg",
+          "alt": "Rows of lit columns reflected in the water of the cistern",
+          "takenAt": "2026-10-25T17:00:34+03:00",
+          "geo": [
+            41.009,
+            28.977
+          ]
+        }
+      ],
+      "geo": [
+        41.008,
+        28.978
+      ]
+    },
+    {
+      "id": "suleymaniye-mosque",
+      "title": "Süleymaniye Mosque",
+      "area": "Süleymaniye hill",
+      "category": "ottoman",
+      "period": "1550–1557",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "collected",
+      "emblem": "suleymaniye",
+      "summary": "Sinan’s mosque for Suleiman the Magnificent, on the highest of the seven hills above the Golden Horn.",
+      "details": [
+        "Four minarets carry ten balconies, a nod to Suleiman being the tenth Ottoman sultan.",
+        "Air channels carried candle soot to a room above the entrance, where it was collected for ink.",
+        "Suleiman and Hürrem Sultan rest in the garden tombs. Sinan’s own modest tomb sits just outside the north wall."
+      ],
+      "media": [
+        {
+          "type": "video",
+          "file": "videos/suleymaniye-mosque-1.mp4",
+          "poster": "photos/suleymaniye-mosque-1-poster.jpg",
+          "alt": "Clip panning over the grey lead domes of the Süleymaniye Mosque toward the Galata Tower and the city under heavy cloud",
+          "takenAt": "2026-10-25T14:08:36+03:00",
+          "geo": [
+            41.016,
+            28.965
+          ]
+        }
+      ],
+      "geo": [
+        41.016,
+        28.964
+      ]
+    },
+    {
+      "id": "topkapi-dagger-and-diamond",
+      "title": "Dagger & Spoonmaker’s Diamond",
+      "area": "Topkapı Palace",
+      "category": "ottoman",
+      "period": "17th–18th c.",
+      "date": "2026-10-26",
+      "collectedOn": "26 Oct",
+      "status": "collected",
+      "emblem": "treasure",
+      "summary": "Two stars of the Imperial Treasury: a dagger set with emeralds, and an 86-carat diamond.",
+      "details": [
+        "The dagger was made in 1747 as a gift for Nader Shah of Persia. He was assassinated before it arrived, so it stayed in Istanbul.",
+        "A fourth emerald on the pommel opens to reveal a small watch. The dagger inspired the 1964 film Topkapi.",
+        "The diamond’s label says it was most likely acquired under Mehmed IV (r. 1648–1687) and is ringed by 49 smaller diamonds. The spoonmaker story is a legend.",
+        "Outside the treasury, the palace terraces and gardens look over the Bosphorus and the Golden Horn."
+      ],
+      "media": [
+        {
+          "file": "photos/treasure-1.jpg",
+          "alt": "The Spoonmaker’s Diamond glowing in its dark display case, with the museum label below",
+          "focus": "50% 40%"
+        },
+        {
+          "file": "photos/treasure-2.jpg",
+          "alt": "The Topkapı Dagger in its case, its hilt set with large emeralds and its sheath with diamonds",
+          "focus": "50% 45%"
+        },
+        {
+          "file": "photos/topkapi-palace-views-1.jpg",
+          "alt": "Wei and Szu Ker on a marble terrace with the Bosphorus behind",
+          "takenAt": "2026-10-26T15:08:54+03:00",
+          "geo": [
+            41.014,
+            28.986
+          ]
+        },
+        {
+          "file": "photos/topkapi-palace-views-2.jpg",
+          "alt": "Selfie of Szu Ker and Wei in the palace garden with the Galata skyline behind",
+          "takenAt": "2026-10-26T14:56:47+03:00",
+          "geo": [
+            41.014,
+            28.984
+          ]
+        }
+      ],
+      "geo": [
+        41.012,
+        28.983
+      ]
+    },
+    {
+      "id": "topkapi-harem",
+      "title": "The Harem",
+      "area": "Topkapı Palace",
+      "category": "ottoman",
+      "period": "Privy Chamber, c. 1578",
+      "date": "2026-10-26",
+      "collectedOn": "26 Oct",
+      "status": "collected",
+      "emblem": "harem",
+      "summary": "The sultan’s family quarters, about 400 rooms, run in practice by his mother, the Valide Sultan.",
+      "details": [
+        "Murad III’s Privy Chamber, designed by Sinan, is the showpiece: İznik tiles, a wall fountain and a gilded dome.",
+        "The Cage kept princes under tight watch to head off challenges to the throne.",
+        "It needs a separate ticket, and the route is one-way."
+      ],
+      "media": [],
+      "geo": [
+        41.012,
+        28.983
+      ]
+    },
+    {
+      "id": "old-city-book-market",
+      "title": "Sahaflar Book Bazaar",
+      "area": "Beyazıt, old city",
+      "category": "modern",
+      "period": "Modern day",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "collected",
+      "summary": "Open-air second-hand booksellers under plane trees, with books laid out on the ground between the stalls.",
+      "details": [],
+      "media": [
+        {
+          "file": "photos/old-city-book-market-1.jpg",
+          "alt": "Selfie of Szu Ker and Wei at an open-air book market with books spread on the ground and a Turkish flag",
+          "takenAt": "2026-10-25T13:15:16+03:00",
+          "geo": [
+            41.01,
+            28.966
+          ]
+        }
+      ],
+      "geo": [
+        41.01,
+        28.966
+      ]
+    },
+    {
+      "id": "galata-tower-night",
+      "title": "Galata Tower at night",
+      "area": "Beyoğlu, European side",
+      "category": "modern",
+      "period": "Modern day",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "collected",
+      "summary": "An evening on the newer, European side of the city, with the floodlit Galata Tower right beside the terrace.",
+      "details": [],
+      "media": [
+        {
+          "file": "photos/galata-tower-night-1.jpg",
+          "alt": "Wei at a rooftop terrace rail at night, the lit Galata Tower behind",
+          "takenAt": "2026-10-25T21:05:15+03:00",
+          "geo": [
+            41.025,
+            28.974
+          ]
+        }
+      ],
+      "geo": [
+        41.026,
+        28.974
+      ]
+    },
+    {
+      "id": "kadikoy",
+      "title": "Kadıköy",
+      "area": "Asian side",
+      "category": "modern",
+      "period": "Modern day",
+      "date": "2026-10-27",
+      "collectedOn": "27 Oct",
+      "status": "collected",
+      "summary": "Across the Bosphorus for the fish market, with whole bonito stacked head-up and the gills flared red.",
+      "details": [
+        "The stall sign reads Cihan Balık. Palamut is bonito."
+      ],
+      "media": [
+        {
+          "file": "photos/kadikoy-1.jpg",
+          "alt": "Rows of bonito with red gills on a fish market stall",
+          "takenAt": "2026-10-27T12:14:00+03:00",
+          "geo": [
+            40.991,
+            29.025
+          ]
+        }
+      ],
+      "geo": [
+        40.991,
+        29.025
+      ]
+    },
+    {
+      "id": "beyoglu-dinner",
+      "title": "Mayko Lokanta",
+      "area": "Beyoğlu, European side",
+      "category": [
+        "food",
+        "modern"
+      ],
+      "period": "Modern day",
+      "date": "2026-10-27",
+      "collectedOn": "27 Oct",
+      "status": "collected",
+      "summary": "A warm, red-seated restaurant: bread, meze and a bottle of ayran.",
+      "details": [
+        "This was the favourite dinner of the trip."
+      ],
+      "media": [
+        {
+          "file": "photos/beyoglu-dinner-1.jpg",
+          "alt": "Wei at a restaurant table with meze, bread and a bottle of ayran",
+          "focus": "50% 30%",
+          "takenAt": "2026-10-27T19:20:26+03:00",
+          "geo": [
+            41.032,
+            28.981
+          ]
+        }
+      ],
+      "geo": [
+        41.032,
+        28.981
+      ],
+      "mapLink": "https://maps.app.goo.gl/RTumt1UxpbpKhn3f7?g_st=ic"
+    },
+    {
+      "id": "balik-durum",
+      "title": "Balık dürüm",
+      "area": "Old city, Istanbul",
+      "category": [
+        "food",
+        "modern"
+      ],
+      "period": "Modern day",
+      "date": "2026-10-25",
+      "collectedOn": "25 Oct",
+      "status": "collected",
+      "summary": "The famous fish wrap, eaten on the first day after the book market and the Süleymaniye. A short clip of the first bites.",
+      "details": [
+        "Balık dürüm is grilled or fried fish wrapped in thin flatbread with salad.",
+        "Filmed at a street-side table with stone walls behind."
+      ],
+      "media": [
+        {
+          "type": "video",
+          "file": "videos/balik-durum-1.mp4",
+          "poster": "photos/balik-durum-1-poster.jpg",
+          "alt": "Szu Ker in a blue puffer jacket eating a balık dürüm wrap held in paper at a street-side table",
+          "takenAt": "2026-10-25T15:28:43+03:00",
+          "geo": [
+            41.018,
+            28.969
+          ]
+        }
+      ],
+      "geo": [
+        41.018,
+        28.969
+      ],
+      "mapLink": "https://maps.app.goo.gl/62ot3cXT7qogmgJ48?g_st=ic"
+    }
+  ],
+  "upcoming": [
+    {
+      "title": "Grand Bazaar",
+      "hint": "Suggested next stop, a short walk downhill from Süleymaniye."
+    }
+  ]
+}
