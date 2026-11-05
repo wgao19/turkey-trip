@@ -1,0 +1,617 @@
+{
+  "id": "antalya",
+  "name": "Antalya",
+  "dates": "From 30 Oct",
+  "memories": [
+    {
+      "id": "national-ascension-monument",
+      "title": "National Ascension Monument",
+      "area": "Cumhuriyet Meydanı, Antalya",
+      "category": "modern",
+      "period": "1964",
+      "date": "2026-10-29",
+      "collectedOn": "29 Oct",
+      "status": "collected",
+      "summary": "Atatürk monument in the middle of Cumhuriyet Meydanı, Antalya's main civic square. The sculptor was Hüseyin Gezer and it was unveiled in 1964.",
+      "details": [
+        "Atatürk stands at the top of a rising rock-like base, with a boy and a girl beside him for the nation's youth.",
+        "The levels of the base stand for the steps from 19 May 1919 to the founding of the Republic.",
+        "Photographed on Republic Day, 29 October, with the square hung with flags."
+      ],
+      "media": [
+        {
+          "file": "photos/national-ascension-monument-1.jpg",
+          "alt": "Sculpture group on a rocky base in Cumhuriyet Meydanı under a grey sky, with a tall Turkish flag and flag bunting across the square",
+          "focus": "55% 60%"
+        }
+      ],
+      "geo": [
+        36.887,
+        30.703
+      ]
+    },
+    {
+      "id": "hadrians-gate",
+      "title": "Hadrian’s Gate",
+      "area": "Kaleiçi, Antalya",
+      "category": "roman",
+      "period": "130 CE",
+      "date": "2026-10-29",
+      "collectedOn": "29 Oct",
+      "status": "collected",
+      "summary": "Marble triumphal arch with three openings, built in 130 CE for Emperor Hadrian's visit to the city, then called Attaleia. It is now the main entrance to the old town, Kaleiçi.",
+      "details": [
+        "A large restoration finished in 1959. Dark granite and white marble columns now stand side by side, and sources disagree on which are original.",
+        "The two towers beside the arch were not part of the first plan.",
+        "Ancient fragments are displayed on the lawn in front, including a spiral-fluted column. Where they were found was not confirmed."
+      ],
+      "media": [
+        {
+          "file": "photos/hadrians-gate-1.jpg",
+          "alt": "Weathered stone tower beside the arches of Hadrian’s Gate, with ancient column pieces on the lawn in front",
+          "focus": "55% 45%"
+        },
+        {
+          "file": "photos/hadrians-gate-2.jpg",
+          "alt": "Spiral-fluted stone column standing on the grass, with carved blocks and the tower and arch behind it",
+          "focus": "60% 55%"
+        }
+      ],
+      "geo": [
+        36.885,
+        30.709
+      ]
+    },
+    {
+      "id": "perge",
+      "title": "Perge",
+      "area": "Aksu, near Antalya",
+      "category": [
+        "roman",
+        "byzantine"
+      ],
+      "period": "3rd c. BCE to 2nd c. CE",
+      "date": "2026-10-30",
+      "collectedOn": "30 Oct",
+      "status": "collected",
+      "summary": "Ruins of a major city of ancient Pamphylia. The entrance is the Hellenistic Gate, two round towers from the 3rd century BCE, with a marble colonnaded street running on beyond it.",
+      "details": [
+        "The horseshoe-shaped courtyard behind the gate was redesigned in the early 2nd century CE. Inscriptions link it to the benefactress Plancia Magna.",
+        "The colonnaded street runs about 300 m with a water channel down the middle and ends at a nymphaeum, a monumental fountain from Hadrian's time.",
+        "The city declined in the Byzantine period as the Aksu river silted up."
+      ],
+      "media": [
+        {
+          "file": "photos/perge-1.jpg",
+          "alt": "Two ruined round towers of the Hellenistic Gate beside a gravel path, with rows of columns stretching away under a deep blue sky",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/perge-2.jpg",
+          "alt": "Close view of the two round Hellenistic Gate towers, with Szu Ker in a blue and green jacket standing on the paving in front",
+          "focus": "50% 50%"
+        },
+        {
+          "file": "photos/perge-3.jpg",
+          "alt": "Szu Ker in a blue and green jacket making a peace sign under a weathered stone arch, with rock-cut walls behind",
+          "focus": "45% 50%"
+        },
+        {
+          "file": "photos/perge-4.jpg",
+          "alt": "Tall ruined stone wall with an arched doorway above brick support pillars behind a wooden fence, under a deep blue sky",
+          "focus": "50% 60%"
+        },
+        {
+          "file": "photos/perge-5.jpg",
+          "alt": "Szu Ker and Wei take a selfie in the opening of a large stone vault, with tall ruined walls and broken piers behind them",
+          "focus": "45% 60%"
+        },
+        {
+          "file": "photos/perge-6.jpg",
+          "alt": "Looking straight up inside a ruined round stone tower to an oval of blue sky",
+          "focus": "50% 50%"
+        }
+      ],
+      "geo": [
+        36.958,
+        30.853
+      ]
+    },
+    {
+      "id": "kaleici-old-town",
+      "title": "Kaleiçi old town",
+      "area": "Kaleiçi, Antalya",
+      "category": "ottoman",
+      "period": "13th c. onward",
+      "date": "2026-10-29",
+      "collectedOn": "29 Oct",
+      "status": "collected",
+      "summary": "Antalya's old town inside the city walls, with red-tiled roofs stepping down toward the sea. Its best-known landmark is the fluted brick Yivli Minaret, from the 13th century.",
+      "details": [
+        "The Yivli Minaret is about 38 m tall, brick above a cut-stone base, with eight flutes that give it its name.",
+        "It belongs to a complex that also holds the Yivli Mosque, a madrasa and a Mevlevi lodge.",
+        "The second view looks over the roofs toward the sea."
+      ],
+      "media": [
+        {
+          "file": "photos/kaleici-old-town-1.jpg",
+          "alt": "Fluted brick minaret rising above red-tiled roofs and trees, with a stone mosque, a clock tower and domes beyond, under grey cloud",
+          "focus": "35% 45%"
+        },
+        {
+          "file": "photos/kaleici-old-town-2.jpg",
+          "alt": "Red-tiled roofs and whitewashed houses stepping down toward the sea under heavy cloud",
+          "focus": "50% 70%"
+        }
+      ],
+      "geo": [
+        36.887,
+        30.705
+      ]
+    },
+    {
+      "id": "hidirlik-tower",
+      "title": "Hıdırlık Tower",
+      "area": "Kaleiçi edge, Antalya",
+      "category": "roman",
+      "period": "1st or 2nd c. CE",
+      "date": "2026-10-29",
+      "collectedOn": "29 Oct",
+      "status": "collected",
+      "summary": "Round stone tower on a square base where Kaleiçi meets Karaalioğlu Park, floodlit at night. Its foundations may date to the 1st or 2nd century CE.",
+      "details": [
+        "About 14 m high, standing in a small park.",
+        "Its first purpose is uncertain. The usual view is a tomb for an important person, and it may later have served as a lookout or lighthouse over the harbour."
+      ],
+      "media": [
+        {
+          "file": "photos/hidirlik-tower-1.jpg",
+          "alt": "Floodlit round stone tower on a square base at night, with glass railings in front and café lights to the right",
+          "focus": "45% 55%"
+        }
+      ],
+      "geo": [
+        36.881,
+        30.704
+      ]
+    },
+    {
+      "id": "sultanyar-kebapcisi",
+      "title": "Sultanyar Kebap",
+      "area": "Antalya",
+      "category": [
+        "food",
+        "modern"
+      ],
+      "period": "Since 1979",
+      "date": "2026-10-29",
+      "collectedOn": "29 Oct",
+      "status": "collected",
+      "summary": "Kebap house in Antalya whose signature dish is the Sultanyar Special mixed grill. The menu says it has been open since 1979.",
+      "details": [
+        "Starters came to the table before ordering: çiğ köfte, a herby yogurt dip, acılı ezme, butter, greens and fresh sesame flatbread.",
+        "The two-person Special was skipped to leave room for lahmacun.",
+        "The menu marks allergens and calories beside each dish."
+      ],
+      "media": [
+        {
+          "file": "photos/sultanyar-kebapcisi-3.jpg",
+          "alt": "Szu Ker looks at a large round lahmacun on a wooden board, with çiğ köfte, acılı ezme, a yogurt dip, greens and tea glasses on the table",
+          "focus": "50% 40%"
+        },
+        {
+          "file": "photos/sultanyar-kebapcisi-1.jpg",
+          "alt": "Table with çiğ köfte on lettuce, yogurt dip, acılı ezme, butter, a greens plate and sesame flatbread",
+          "focus": "50% 45%"
+        },
+        {
+          "file": "photos/sultanyar-kebapcisi-2.jpg",
+          "alt": "Laminated Sultanyar Kebapçısı menu page listing kebap varieties with photos, prices and allergen icons",
+          "focus": "50% 50%"
+        }
+      ],
+      "geo": [
+        36.87,
+        30.72
+      ],
+      "mapLink": "https://maps.app.goo.gl/ACZqrwohRuZrAjn19?g_st=ic"
+    },
+    {
+      "id": "around-antalya",
+      "title": "Around Antalya",
+      "area": "Antalya",
+      "category": "modern",
+      "period": "Oct 2026",
+      "date": "2026-10-29",
+      "collectedOn": "29 Oct",
+      "status": "collected",
+      "summary": "Everyday scenes from walking around the city: the bay, a painted bike path and a café stop. Not tied to one named site.",
+      "details": [
+        "The bay view looks across the water to mountains, with a boat leaving a white wake.",
+        "The bike path is painted blue and yellow beside a road with taxis.",
+        "At a café in the evening a kitten curled up on a lap."
+      ],
+      "media": [
+        {
+          "file": "photos/around-antalya-1.jpg",
+          "alt": "Antalya Bay under layered clouds with a boat leaving a white wake and mountains across the water",
+          "focus": "50% 60%"
+        },
+        {
+          "file": "photos/around-antalya-2.jpg",
+          "alt": "Blue-painted bike path beside a road with yellow taxis and a small kiosk, mountains and clouds in the distance",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/around-antalya-3.jpg",
+          "alt": "A ginger kitten asleep on a person's lap at a café, with a glass floor and warm lights behind",
+          "focus": "55% 65%"
+        }
+      ]
+    },
+    {
+      "id": "lunch-stop",
+      "title": "Köfteci Cihat",
+      "area": "Aksu, near Perge",
+      "category": [
+        "food",
+        "modern"
+      ],
+      "period": "Oct 2026",
+      "date": "2026-10-30",
+      "collectedOn": "30 Oct",
+      "status": "collected",
+      "summary": "Lunch after Perge at a köfte restaurant in Aksu: soup, grilled köfte on flatbread, a hummus-style plate, a rocket and tomato salad and ayran.",
+      "details": [
+        "The köfte came on flatbread with a grilled green pepper and onions.",
+        "The restaurant is Köfteci Cihat, found from the name and the Aksu branch near Perge. The Maps link could not be opened to confirm the branch."
+      ],
+      "media": [
+        {
+          "file": "photos/lunch-stop-1.jpg",
+          "alt": "Szu Ker eating at a table with yellow soup, grilled köfte on flatbread with a green pepper and onions, a hummus-style plate, a rocket and tomato salad, flatbread and a bottle of ayran",
+          "focus": "45% 60%"
+        }
+      ],
+      "geo": [
+        36.948,
+        30.853
+      ],
+      "mapLink": "https://maps.app.goo.gl/7R8fFc2UPxejoXUa9?g_st=ic"
+    },
+    {
+      "id": "aspendos-theatre",
+      "title": "Aspendos Theatre",
+      "area": "Aspendos, near Antalya",
+      "category": "roman",
+      "period": "2nd c. CE",
+      "date": "2026-10-30",
+      "collectedOn": "30 Oct",
+      "status": "collected",
+      "summary": "One of the best-preserved Roman theatres anywhere, built in the reign of Marcus Aurelius by the local architect Zenon. The stage building still stands, which is rare.",
+      "details": [
+        "Built between 161 and 180 CE. Two brothers, Curtius Crispinus and Curtius Auspicatus, are named as the commissioners.",
+        "Sources disagree on capacity: figures range from about 7,000 to 13,000 and 12,000 for the 41 rows of seats.",
+        "In the 13th century the Seljuks turned the stage building into a palace, and the theatre was also used as a caravanserai.",
+        "A modern stage platform and protective covers were in place, because the theatre is used for opera and ballet performances.",
+        "Cats wander the site. The last two photos show a black-and-white cat with her kittens on the old paving."
+      ],
+      "media": [
+        {
+          "file": "photos/aspendos-theatre-1.jpg",
+          "alt": "Wide view from the top rows over the semicircle of seats to the stage building, with warm evening light and a modern stage platform in front",
+          "focus": "50% 45%"
+        },
+        {
+          "file": "photos/aspendos-theatre-2.jpg",
+          "alt": "Looking up the steep stone seating to the arcade of arches along the top, with Szu Ker sitting on the steps",
+          "focus": "50% 45%"
+        },
+        {
+          "file": "photos/aspendos-theatre-3.jpg",
+          "alt": "Angled view down the curving rows of seats toward the stage and the tall stage wall in the evening sun",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/aspendos-theatre-4.jpg",
+          "alt": "Looking down on the stage from above, with Szu Ker in a blue and green jacket standing at its edge in front of the carved stage wall",
+          "focus": "50% 60%"
+        },
+        {
+          "file": "photos/aspendos-theatre-5.jpg",
+          "alt": "Vaulted stone corridor with a row of rounded arches curving away under the seating",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/aspendos-theatre-6.jpg",
+          "alt": "A second vaulted passage of pale stone arches with a gravel floor curving into the distance",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/aspendos-cats-1.jpg",
+          "alt": "A black-and-white cat and a small kitten walking together across worn stone paving",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/aspendos-cats-2.jpg",
+          "alt": "A black-and-white cat looks back over her shoulder while two kittens huddle against her beside an umbrella stand",
+          "focus": "50% 50%"
+        }
+      ],
+      "geo": [
+        36.939,
+        31.172
+      ]
+    },
+    {
+      "id": "aspendos-upper-city",
+      "title": "Aspendos upper city ruins",
+      "area": "Aspendos, near Antalya",
+      "category": "roman",
+      "period": "Roman period",
+      "date": "2026-10-30",
+      "collectedOn": "30 Oct",
+      "status": "collected",
+      "summary": "Ruined walls and arches above the theatre in low evening light, with grass, broken columns and a carved cornice still in place.",
+      "details": [
+        "The photos show a tall ruined wall with decorated stonework, a large arched hall open to the sky and a row of broken column bases.",
+        "Which building each ruin was is not confirmed here."
+      ],
+      "media": [
+        {
+          "file": "photos/aspendos-upper-city-1.jpg",
+          "alt": "Low golden sunlight on tall ruined walls with column bases and fallen stones in the grass under a deep blue sky",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/aspendos-upper-city-2.jpg",
+          "alt": "Narrow tall ruined wall with a carved stone cornice jutting out, lit gold against a dark blue sky",
+          "focus": "40% 40%"
+        },
+        {
+          "file": "photos/aspendos-upper-city-3.jpg",
+          "alt": "Looking up through a large ruined stone arch to blue sky, with more arches and walls inside the roofless hall",
+          "focus": "50% 50%"
+        }
+      ]
+    },
+    {
+      "id": "karadeniz-balikcisi-side",
+      "title": "Karadeniz Balıkçısı",
+      "area": "Side, Manavgat",
+      "category": [
+        "food",
+        "modern"
+      ],
+      "period": "Oct 2026",
+      "date": "2026-10-30",
+      "collectedOn": "30 Oct",
+      "status": "collected",
+      "summary": "Fish restaurant in Side where dinner was a big plate of fried anchovies with a table of small side dishes. The photo menu is shown with it.",
+      "details": [
+        "The big plate looks like hamsi tava, fried anchovies, listed at 500 TL on the menu.",
+        "The table also had a green salad, bread, lemon, pickles, radish, cucumber, cherry tomatoes and two dips.",
+        "The menu lists the address as Side Cad. No:40, Manavgat, Antalya."
+      ],
+      "media": [
+        {
+          "file": "photos/karadeniz-balikcisi-side-1.jpg",
+          "alt": "Szu Ker gives two thumbs up over a table with a large round plate of fried anchovies, small dishes of pickles, radish and dips, a green salad and a second plate of fish at the back",
+          "focus": "50% 55%"
+        },
+        {
+          "file": "photos/karadeniz-balikcisi-side-2.jpg",
+          "alt": "Laminated blue menu of Karadeniz Balıkçısı Side with photos and handwritten prices for fried and grilled fish, calamari, prawns, mezes and mixed fish platters",
+          "focus": "50% 50%"
+        }
+      ],
+      "geo": [
+        36.774,
+        31.395
+      ],
+      "mapLink": "https://maps.app.goo.gl/BqyMKysb9Tt9wiBa9?g_st=ic"
+    },
+    {
+      "id": "side-breakfast",
+      "title": "Breakfast before Side",
+      "area": "Near Side",
+      "category": [
+        "food",
+        "modern"
+      ],
+      "period": "Today",
+      "date": "2026-10-31",
+      "collectedOn": "31 Oct",
+      "status": "collected",
+      "summary": "Breakfast before walking round the ancient town of Side. The spinach pancake was the favourite.",
+      "details": [
+        "Menemen came in a copper pan, with a spinach gözleme, an omelette, olives, tomato and Turkish coffee.",
+        "The spinach pancake was really good."
+      ],
+      "media": [
+        {
+          "file": "photos/side-breakfast-1.jpg",
+          "alt": "Breakfast table with Szu Ker: menemen in a copper pan, spinach gözleme, olives, tomato and Turkish coffee"
+        }
+      ],
+      "mapLink": "https://maps.app.goo.gl/rSL3R7BNUoFLQMSq9?g_st=ic"
+    },
+    {
+      "id": "side-ancient-city",
+      "title": "Side ancient city",
+      "area": "Side, Manavgat",
+      "category": [
+        "roman",
+        "modern",
+        "food"
+      ],
+      "period": "2nd c. CE · under restoration",
+      "date": "2026-10-31",
+      "collectedOn": "31 Oct",
+      "status": "collected",
+      "summary": "The Roman theatre and restored columns of Side under restoration, a clifftop by the sea with an old motorbike, and a pomegranate eaten inside the old walls.",
+      "details": [
+        "Theatre: built in the second half of the 2nd century CE, possibly on an earlier Hellenistic theatre.",
+        "Estimates put the theatre seating at about 13,700 to 17,200 people. The upper rows sit on two levels of barrel-vaulted arches.",
+        "In late Roman times a wall was built around the orchestra to make an arena for gladiator fights and animal shows.",
+        "The hoardings show aerial photos of the theatre and the name Side Antik Kenti.",
+        "Columns: fluted marble columns stand again on new bases, with a steel scaffold holding a stack of stone beams behind.",
+        "A sign on the hoarding behind lists the Temple of Demeter, but which building these columns belong to is not confirmed here.",
+        "The first column photo is a weathered column drum on its base, with the grain of the fluting still visible.",
+        "Seafront: an old motorbike parked on a dusty clifftop beside the sea, with a tour boat on the horizon and a rain cloud over the water.",
+        "A bare tree, an old drum and a few ancient stone slabs frame the spot.",
+        "Pomegranate: Side is known as an old pomegranate town, so they ate one there, cut open at a table under the trees beside the old walls.",
+        "Side’s name is said to come from an ancient local word for pomegranate, and the city took the fruit as its symbol."
+      ],
+      "media": [
+        {
+          "file": "photos/side-theatre-1.jpg",
+          "alt": "Two tall cranes rise above the ruined seating of the Side theatre, behind white restoration hoardings with the name Side Antik Kenti and ruined stone walls in front",
+          "focus": "50% 50%",
+          "caption": "The theatre behind restoration cranes"
+        },
+        {
+          "file": "photos/side-restored-columns-1.jpg",
+          "alt": "A weathered fluted column drum on a round base in the foreground, with restored columns and a steel scaffold carrying stone blocks behind restoration hoardings",
+          "focus": "50% 55%",
+          "caption": "Restored columns and scaffold"
+        },
+        {
+          "file": "photos/side-seafront-1.jpg",
+          "alt": "An old motorbike with a striped bag parked under a bare tree beside the sea, with a boat on the horizon and tall clouds over the water",
+          "focus": "40% 65%",
+          "caption": "A vintage motorbike on the clifftop by the sea"
+        },
+        {
+          "file": "photos/side-pomegranate-1.jpg",
+          "alt": "Wei holds up a halved pomegranate full of red seeds at a table under trees, with crates of pomegranates, a blue tractor and an old arched wall behind",
+          "focus": "45% 50%",
+          "caption": "A pomegranate, cut open under the trees"
+        }
+      ],
+      "geo": [
+        36.768,
+        31.389
+      ]
+    },
+    {
+      "id": "olympos",
+      "title": "Olympos",
+      "area": "Near Çıralı, Kumluca",
+      "category": [
+        "roman",
+        "byzantine"
+      ],
+      "period": "Hellenistic to Byzantine",
+      "date": "2026-11-05",
+      "collectedOn": "5 Nov",
+      "status": "collected",
+      "summary": "A Lycian city in a forested valley, split by a creek that runs down to the sea. The photos cover the Roman temple’s monumental door, the harbour tomb, the Episcopal Palace, tombs and inscriptions, and a clip from the entrance.",
+      "details": [
+        "Overview: a Hellenistic city and member of the Lycian League, with its earliest city wall dating to around 300 BC. The pirate leader Zenicetes held it as a stronghold. It came under Roman rule in 77 BC, and Hadrian visited in 129 AD. It was at its height in the 5th and 6th centuries AD, then in decline after Arab raids in the 7th century.",
+        "Roman temple (the monumental entrance): the site board says it was built in the first half of the 2nd century AD under Hadrian, in the centre of the northern city, and was the most important building in the city, probably built to honour the emperor’s visit. The walls of the sacred chamber (naos), the pronaos up to floor level and part of two columns survive.",
+        "Temple façade: built entirely of cut stone blocks, with six Ionic columns in front, friezes of curling branches and rosettes, a flat-faced pediment, and lion-head gargoyles on the sides. The columned front has collapsed. Blocks found in excavations since 2017 are displayed around the temple.",
+        "The naos façade wall and the monumental door, with its cantilevered lintel, survive with elaborate carving. On some blocks the decoration was left unfinished.",
+        "Episcopal Palace: in the Byzantine period the temple area became a bishop’s palace, and the temple building, still standing, became part of it. Four piers were added to the naos and a door was opened to connect it with the space to the west.",
+        "The palace sits in the centre of the northern city at a junction of main streets, was enclosed by a perimeter wall, and is the largest structure in the city, a rectangle of about 128 by 62 m. It took in the earlier Roman temple and its temenos (or forum).",
+        "Inscription at the Episcopal Palace: a Greek text on a wall block names a Marcus Aurelius Zosas (also called Aristandros) and a Menodoros (also called Lysimachos), both Olympians, and mentions the pankration, the ancient combat sport. It may honour an athlete or a gift in someone’s memory. This is a tentative reading from a photo, not a translation.",
+        "Tomb inscription: a sarcophagus carries a Greek notice naming a man from Olympos who built the tomb for himself, his children and his brothers, and barring anyone else from being buried in it. A fine is payable to the treasury, with a third part in the final line. The photo is partly broken, so this is a rough reading, not a translation.",
+        "Entrance complex: ruined rubble-stone walls with a lintel doorway, standing among pines below the forested slopes.",
+        "Bath house: Wei was told these ruins are a bath house said to have been built by the emperor Vespasian. This is not confirmed here: a general history of Olympos only says that public buildings such as baths lay in the southern part of the city.",
+        "Still on the list: the basilica and the building with mosaics, the sarcophagus of Antimachos, the theatre across the river, and the acropolis for the view. The Chimaera flames (Yanartaş) are a short hike away and are best near dusk.",
+        "Harbour tomb: a captain’s sarcophagus with a ship carved on its front, a face in the pediment of its lid, and a mosaic floor in front. One guide says it is the sarcophagus of Captain Eudemos, with an inscription about his voyages. The name comes from that one guide and is not confirmed here."
+      ],
+      "media": [
+        {
+          "file": "photos/olympos-12.jpg",
+          "alt": "Front-on view of the tall doorway in a wall of cut stone blocks, with a moulded frame and a carved lintel resting on scroll brackets, and wide stone steps in front",
+          "focus": "50% 45%",
+          "caption": "The monumental door of the Roman temple, Hadrian’s gate"
+        },
+        {
+          "file": "photos/olympos-13.jpg",
+          "alt": "A stone sarcophagus with a ship carved on its front and a face in the pediment of its lid, framed by two fluted column blocks, with a mosaic floor panel of a figure and an animal in front",
+          "focus": "50% 45%",
+          "caption": "The harbour tomb: a captain’s sarcophagus with a ship carved on the front"
+        },
+        {
+          "type": "video",
+          "file": "videos/olympos-1.mp4",
+          "poster": "photos/olympos-1-poster.jpg",
+          "alt": "Clip at the Olympos entrance: grey limestone slopes and pine forest above a dry-stone wall with a ruined arch, then white pampas plumes and bins at the car park under moving cloud",
+          "takenAt": "2026-11-05T15:48:09+03:00",
+          "geo": [
+            36.394,
+            30.471
+          ],
+          "caption": "Arriving at Olympos, filmed near the entrance"
+        },
+        {
+          "file": "photos/olympos-2.jpg",
+          "alt": "A stone sarcophagus with a pointed-arch lid and a broken chamber beside it, seen through a gateway in a dry-stone wall under a cloudy sky",
+          "focus": "50% 40%",
+          "caption": "A sarcophagus seen through a wall gateway"
+        },
+        {
+          "file": "photos/olympos-3.jpg",
+          "alt": "Close view of a cracked sarcophagus with a framed Greek inscription panel on its front, and a broken opening beside it",
+          "focus": "60% 50%",
+          "caption": "The sarcophagus inscription, close up"
+        },
+        {
+          "file": "photos/olympos-4.jpg",
+          "alt": "Ruined stone walls of the entrance complex with a lintel doorway at left, and a tall pine in front of forested slopes under a cloudy sky",
+          "focus": "50% 55%",
+          "caption": "The entrance complex"
+        },
+        {
+          "file": "photos/olympos-5.jpg",
+          "alt": "Inside the entrance complex: rubble-stone walls with gaps for doorways, dry grass in the foreground and pines behind",
+          "focus": "50% 55%",
+          "caption": "Inside the entrance complex"
+        },
+        {
+          "file": "photos/olympos-6.jpg",
+          "alt": "A narrow stream running between ruined stone walls, with two column drums on a stepped stone base at right and a pine growing beside a wall under a cloudy sky",
+          "focus": "50% 55%",
+          "caption": "A stream running through the ruins"
+        },
+        {
+          "file": "photos/olympos-7.jpg",
+          "alt": "A dirt path between low dry-stone walls leading toward a taller ruined building with arched openings, with forested slopes beyond",
+          "focus": "50% 55%",
+          "caption": "A path between dry-stone walls"
+        },
+        {
+          "file": "photos/olympos-8.jpg",
+          "alt": "Low rubble-stone wall lines and floors of a ruined building, with tall stone walls and small window openings behind and forested slopes above",
+          "focus": "50% 55%",
+          "caption": "Said to be a bath house built by Vespasian (not confirmed)"
+        },
+        {
+          "file": "photos/olympos-9.jpg",
+          "alt": "Szu Ker peeks over the Episcopal Palace information board, with a tall ruined stone wall rising behind him under a cloudy sky",
+          "focus": "50% 45%",
+          "caption": "Szu Ker at the Episcopal Palace board"
+        },
+        {
+          "file": "photos/olympos-10.jpg",
+          "alt": "A block of pale stone set in a rubble wall, carved with seven lines of Greek capital letters, with a ruined wall and cloudy sky above",
+          "focus": "50% 40%",
+          "caption": "Greek inscription on a wall block at the Episcopal Palace"
+        },
+        {
+          "file": "photos/olympos-11.jpg",
+          "alt": "A tall doorway with a moulded stone frame and lintel, set in a wall of neatly cut stone blocks, seen over low rubble walls with forested slopes behind",
+          "focus": "50% 60%",
+          "caption": "The Roman temple’s monumental doorway"
+        }
+      ],
+      "geo": [
+        36.396,
+        30.472
+      ]
+    }
+  ],
+  "upcoming": []
+}

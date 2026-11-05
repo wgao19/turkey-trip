@@ -1,0 +1,115 @@
+/*
+  DAY MAP
+  Styles the route map that js/daymap.js draws at the top of each day in the By day view.
+  Colours, fonts, spacing and shape all come from the tokens in css/tokens.css.
+*/
+.daymap{
+  margin:0 0 var(--space-5);
+  background:var(--color-surface);
+  border:var(--border-width) solid var(--color-border);
+  border-radius:var(--radius-card);
+  overflow:hidden;
+}
+.daymap__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-3);
+  padding:var(--space-3) var(--space-4);
+}
+.daymap__link{
+  color:var(--color-highlight);
+  text-decoration:none;
+  border-bottom:var(--border-width) solid currentColor;
+}
+.daymap__link:focus-visible{outline:2px solid var(--color-focus);outline-offset:3px}
+.daymap__svg{
+  display:block;
+  width:100%;
+  height:auto;
+  background:var(--color-surface-alt);
+  border-top:var(--border-width) solid var(--color-border);
+  border-bottom:var(--border-width) solid var(--color-border);
+}
+.daymap__grid line{stroke:var(--color-border);stroke-width:1;opacity:.7}
+.daymap__route line{
+  stroke:var(--color-highlight);
+  stroke-width:2.5;
+  stroke-dasharray:7 6;
+  stroke-linecap:round;
+}
+.daymap__arrows polygon{fill:var(--color-highlight)}
+.daymap__pin{stroke:var(--color-surface);stroke-width:2.5}
+.daymap__num{
+  fill:#fff;
+  font:600 13px var(--font-body);
+  text-anchor:middle;
+  dominant-baseline:central;
+}
+.daymap__scale{stroke:var(--color-text-muted);stroke-width:2;fill:none}
+.daymap__scale-text{fill:var(--color-text-muted);font:11px var(--font-label)}
+.daymap__north-arrow{fill:var(--color-text-muted)}
+.daymap__north{fill:var(--color-text-muted);font:11px var(--font-label);text-anchor:middle}
+.daymap__summary,
+.daymap__missing{
+  margin:0;
+  padding:var(--space-3) var(--space-4) 0;
+  color:var(--color-text-muted);
+}
+.daymap__stops{
+  list-style:none;
+  margin:0;
+  padding:var(--space-2) var(--space-2) var(--space-3);
+}
+.daymap__stop{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:var(--space-1) var(--space-3);
+  padding:var(--space-2);
+  border-radius:var(--radius-badge);
+  color:var(--color-text);
+  text-decoration:none;
+}
+.daymap__stop:hover{background:var(--color-surface-alt)}
+.daymap__stop:focus-visible{outline:2px solid var(--color-focus);outline-offset:1px}
+.daymap__dot{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:24px;
+  border-radius:var(--radius-pill);
+  color:#fff;
+  font:600 .8rem var(--font-body);
+  font-style:normal;
+}
+.daymap__stop-title{font-family:var(--font-body);font-size:var(--text-small);font-weight:500}
+.daymap__stop-area{color:var(--color-text-muted)}
+.daymap__missing{padding-bottom:var(--space-3)}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .daymap__num,
+  :root:not([data-theme="light"]) .daymap__dot{fill:#0A0F1F;color:#0A0F1F}
+}
+:root[data-theme="dark"] .daymap__num,
+:root[data-theme="dark"] .daymap__dot{fill:#0A0F1F;color:#0A0F1F}
+
+.daymap__canvas{position:relative}
+.daymap__live{
+  width:100%;
+  aspect-ratio:16/9;
+  min-height:260px;
+  background:var(--color-surface-alt);
+  border-top:var(--border-width) solid var(--color-border);
+  border-bottom:var(--border-width) solid var(--color-border);
+  z-index:0;
+}
+.daymap__marker span{
+  display:flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid #fff;color:#fff;
+  font:600 13px var(--font-body);
+  box-shadow:0 1px 4px rgba(0,0,0,.4);
+}
