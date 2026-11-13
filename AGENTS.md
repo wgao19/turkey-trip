@@ -96,6 +96,10 @@ Photos become 1200 px JPEGs. Videos become H.264 MP4, at most 720 px wide (portr
 6. Keep diacritics (Süleymaniye, Topkapı, İznik). Use "Türkiye".
 7. Never remove existing content unless Wei asks.
 
+## Text edits from the editor
+
+Wei edits captions and other text in the Turkey Trip Editor artifact. Ship and sync requests from it follow `cms/README.md`.
+
 ## More
 
 `docs/REFERENCE.md` covers the data format, doing it by hand if Python is unavailable, new categories and artwork, publishing conflicts and restyling. Read it only when this file does not cover the task.

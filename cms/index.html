@@ -1,0 +1,535 @@
+<title>Turkey Trip Editor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky ship bar, then a card index on the left and the field editor on the right (stacked on phones).
+   Palette and type follow the Turkey Trip site's own tokens. */
+:root{
+  --page:#ECEFF5; --surface:#FFFFFF; --surface-alt:#F4F6FB; --text:#0F1730; --muted:#55607A;
+  --border:#D3DAE8; --accent:#0E8F8C; --on-accent:#FFFFFF; --draft:#B45309; --draft-bg:#FDF1E3;
+  --shipped:#1E50D2; --shipped-bg:#E7EEFF; --danger:#B3363F; --danger-bg:#FBE9EA;
+  --font-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --font-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-label:'DM Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#0A0F1F; --surface:#121A30; --surface-alt:#18223D; --text:#E8ECF8; --muted:#9AA5C0;
+  --border:#25304D; --accent:#41D1CB; --on-accent:#0A0F1F; --draft:#F5B36B; --draft-bg:#33240F;
+  --shipped:#7DA2FF; --shipped-bg:#18264A; --danger:#F0808A; --danger-bg:#3A1A1E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#0A0F1F; --surface:#121A30; --surface-alt:#18223D; --text:#E8ECF8; --muted:#9AA5C0;
+  --border:#25304D; --accent:#41D1CB; --on-accent:#0A0F1F; --draft:#F5B36B; --draft-bg:#33240F;
+  --shipped:#7DA2FF; --shipped-bg:#18264A; --danger:#F0808A; --danger-bg:#3A1A1E; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--text);font:15px/1.5 var(--font-body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.label{font:500 .72rem var(--font-label);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--border)}
+.bar__inner{max-width:1180px;margin:0 auto;padding-block:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.bar__title{font:700 1.25rem/1.1 var(--font-display);margin:0;flex:1 1 auto;min-width:0}
+.bar__sub{display:block;margin-top:2px}
+.bar__actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 14px;font-weight:600;font-size:.9rem}
+.btn:hover{background:var(--surface-alt)}
+.btn--primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn--primary:hover{background:var(--accent);filter:brightness(1.08)}
+.btn[disabled]{opacity:.45;cursor:default;filter:none}
+.btn--small{padding:3px 10px;font-size:.8rem}
+.link{background:none;border:0;padding:0;color:var(--accent);font-weight:600;font-size:.85rem;text-decoration:underline;text-underline-offset:3px}
+
+.notice{max-width:1180px;margin:0 auto 0;padding-block:10px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:.9rem}
+.notice[hidden]{display:none}
+.notice--band{background:var(--surface-alt);border-bottom:1px solid var(--border)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;font:500 .72rem var(--font-label);letter-spacing:.06em;text-transform:uppercase}
+.pill--draft{background:var(--draft-bg);color:var(--draft)}
+.pill--shipped{background:var(--shipped-bg);color:var(--shipped)}
+.pill--conflict{background:var(--danger-bg);color:var(--danger)}
+.pill--ok{background:var(--surface-alt);color:var(--muted)}
+
+.shipbox{max-width:1180px;margin:0 auto;padding-block:14px;display:grid;gap:10px}
+.shipbox textarea{min-height:60px}
+
+.main{max-width:1180px;margin:0 auto;padding-block:20px 60px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}.nav{position:static;max-height:none}}
+.nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);max-height:calc(100vh - 110px);overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:8px}
+.nav__group{margin:10px 8px 4px}
+.nav__item{display:flex;width:100%;align-items:center;gap:8px;text-align:left;border:0;background:none;color:var(--text);border-radius:8px;padding:7px 8px;font-size:.92rem}
+.nav__item:hover{background:var(--surface-alt)}
+.nav__item[aria-current="true"]{background:var(--surface-alt);font-weight:600;box-shadow:inset 3px 0 0 var(--accent)}
+.nav__name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{flex:none;min-width:20px;height:20px;border-radius:999px;font:600 .7rem/20px var(--font-label);text-align:center;padding:0 5px}
+.dot--draft{background:var(--draft-bg);color:var(--draft)}
+.dot--shipped{background:var(--shipped-bg);color:var(--shipped)}
+.dot--conflict{background:var(--danger-bg);color:var(--danger)}
+
+.editor{min-width:0;display:grid;gap:18px}
+.editor__head h2{font:700 1.7rem/1.15 var(--font-display);margin:2px 0 0;text-wrap:balance}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:grid;gap:14px;min-width:0}
+.panel__title{font:600 1rem var(--font-body);margin:0}
+.field{display:grid;gap:5px;min-width:0}
+.field__top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.field__top label{font-weight:600;font-size:.88rem}
+.field__hint{font-size:.8rem;color:var(--muted)}
+.field__was{font-size:.82rem;color:var(--muted);background:var(--surface-alt);border-radius:8px;padding:6px 10px;white-space:pre-wrap}
+.field__was b{font-weight:600}
+input[type=text],textarea{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;padding:8px 10px}
+textarea{resize:vertical;min-height:44px}
+.field--draft input,.field--draft textarea{border-color:var(--draft)}
+.field--conflict input,.field--conflict textarea{border-color:var(--danger)}
+.list{display:grid;gap:8px}
+.list__row{display:flex;gap:8px;align-items:flex-start}
+.list__row textarea{flex:1}
+.media{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;padding-top:14px;border-top:1px solid var(--border)}
+.media:first-of-type{border-top:0;padding-top:0}
+.media__thumb{width:120px;aspect-ratio:4/5;object-fit:cover;border-radius:10px;background:var(--surface-alt);max-width:100%}
+.media__fields{display:grid;gap:10px;min-width:0}
+@media (max-width:480px){.media{grid-template-columns:minmax(0,1fr)}.media__thumb{width:100%;max-width:220px}}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+.saving{font-size:.8rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="bar">
+  <div class="bar__inner wrap">
+    <h1 class="bar__title">Turkey Trip Editor<span class="bar__sub label" id="sync-line">Loading content…</span></h1>
+    <div class="bar__actions">
+      <span class="pill pill--ok" id="draft-count">No edits yet</span>
+      <button class="btn" id="sync-btn" type="button" title="Ask Claude to refresh this editor from the live site">Sync from GitHub</button>
+      <button class="btn btn--primary" id="ship-btn" type="button" disabled>Ship edits</button>
+    </div>
+  </div>
+  <div class="notice notice--band wrap" id="ship-status" hidden></div>
+  <div class="notice--band" id="ship-panel" hidden>
+    <div class="shipbox wrap">
+      <div><strong id="ship-panel-title">Ship edits</strong>
+        <p class="field__hint" style="margin:4px 0 0">Claude applies your edits to the repo and opens a pull request. Edits stay here until the PR is merged, and you can keep editing meanwhile.</p></div>
+      <label for="ship-note" class="field__hint">Note for Claude (optional)</label>
+      <textarea id="ship-note" placeholder="Anything to know about these edits"></textarea>
+      <div class="bar__actions">
+        <button class="btn btn--primary" id="ship-confirm" type="button">Send to Claude</button>
+        <button class="btn" id="ship-cancel" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="main wrap">
+  <nav class="nav" id="nav" aria-label="Cards"></nav>
+  <main class="editor" id="editor"><p class="empty">Loading the trip…</p></main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // This Claude Code session handles ship and sync requests. See cms/README.md in the repo.
+  const SESSION_ID = 'session_0115EojAohS1N3BvAycT1A18';
+  const CONNECTOR = 'Claude Code Remote';
+  const ASK_SHIP = 'Ship my Turkey Trip editor edits (follow cms/README.md).';
+  const ASK_SYNC = 'Sync the Turkey Trip editor from GitHub main (follow cms/README.md).';
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const norm = v => (v === '' || v === undefined) ? null : v;
+  const same = (a, b) => JSON.stringify(norm(a)) === JSON.stringify(norm(b));
+
+  const state = {
+    files: {},           // "site.json" / "destinations/x.json" -> parsed JSON
+    meta: null,
+    edits: new Map(),    // doc id -> edit record
+    ship: null,
+    current: 'site',     // selected section: "site" or "<dest>/<memoryId>" or "dest:<dest>"
+    db: null,
+    canWrite: true,
+    dbNote: ''
+  };
+
+  // ---- Paths into the content files -------------------------------------------------------
+  function step(node, seg) {
+    if (node == null) return undefined;
+    if (Array.isArray(node)) {
+      if (seg[0] === '#') return node[+seg.slice(1)];
+      const i = seg.indexOf('='), k = seg.slice(0, i), v = seg.slice(i + 1);
+      return node.find(x => x && String(x[k]) === v);
+    }
+    return node[seg];
+  }
+  function getAt(path) {
+    let node = state.files[path[0]];
+    for (const seg of path.slice(1)) node = step(node, seg);
+    return node;
+  }
+  const docId = path => path.join('~').replace(/\//g, ':').replace(/#/g, '+').replace(/[^A-Za-z0-9_\-.~:@+]/g, '_').slice(0, 190);
+
+  // ---- Edit status ------------------------------------------------------------------------
+  function statusOf(path) {
+    const e = state.edits.get(docId(path));
+    if (!e) return null;
+    const orig = getAt(path);
+    if (same(orig, e.value)) return null;                    // already live
+    if (e.state === 'shipped') return 'shipped';
+    if (!same(orig, e.base)) return 'conflict';
+    return 'draft';
+  }
+  function liveEdits() {
+    return [...state.edits.values()].filter(e => {
+      const s = statusOf(e.path);
+      return s === 'draft' || s === 'conflict' || s === 'shipped';
+    });
+  }
+  function shownValue(path) {
+    const e = state.edits.get(docId(path));
+    return e && statusOf(path) ? e.value : getAt(path);
+  }
+
+  // ---- Saving -----------------------------------------------------------------------------
+  const timers = new Map();
+  function queueSave(path, value) {
+    const id = docId(path);
+    clearTimeout(timers.get(id));
+    timers.set(id, setTimeout(() => { timers.delete(id); save(path, value); }, 600));
+    setSaving('Saving…');
+  }
+  let saveChain = Promise.resolve();
+  function save(path, value) {
+    const id = docId(path);
+    const orig = getAt(path);
+    const prev = state.edits.get(id);
+    const rec = same(orig, value) ? null : {
+      path, value: norm(value), base: norm(prev && prev.state === 'draft' ? prev.base : orig),
+      state: 'draft', updatedAt: new Date().toISOString()
+    };
+    if (rec) state.edits.set(id, rec); else state.edits.delete(id);
+    refreshChrome();
+    if (!state.db) { setSaving('Not saved: storage is unavailable here'); return; }
+    const ref = state.db.doc('edits/' + id);
+    saveChain = saveChain.then(() => (rec ? ref.set(rec) : ref.delete()))
+      .then(() => setSaving('All changes saved'))
+      .catch(err => setSaving(err && err.code === 'invalid_argument'
+        ? 'You can view but not save edits on this page.' : 'Could not save. Check your connection and edit again.'));
+  }
+  function setSaving(text) { const el = $('saving'); if (el) el.textContent = text; }
+
+  // ---- Field builders ---------------------------------------------------------------------
+  function fieldHtml(path, label, opts) {
+    opts = opts || {};
+    const st = statusOf(path);
+    const e = state.edits.get(docId(path));
+    const val = shownValue(path);
+    const id = 'f-' + docId(path);
+    const pill = st === 'draft' ? '<span class="pill pill--draft">Edited</span>'
+      : st === 'shipped' ? '<span class="pill pill--shipped">In PR' + (e.pr ? ' #' + esc(e.pr) : '') + '</span>'
+      : st === 'conflict' ? '<span class="pill pill--conflict">Changed on GitHub</span>' : '';
+    const revert = st ? '<button class="link" type="button" data-revert="' + esc(JSON.stringify(path)) + '">Revert</button>' : '';
+    let input;
+    if (opts.list) {
+      const items = Array.isArray(val) ? val : [];
+      input = '<div class="list" data-list="' + esc(JSON.stringify(path)) + '">' +
+        items.map((t, i) => '<div class="list__row"><textarea rows="2" id="' + id + '-' + i + '" aria-label="' + esc(label) + ' ' + (i + 1) + '">' + esc(t) + '</textarea>' +
+          '<button class="btn btn--small" type="button" data-remove="' + i + '" aria-label="Remove note ' + (i + 1) + '">Remove</button></div>').join('') +
+        '<div><button class="btn btn--small" type="button" data-add="1">Add note</button></div></div>';
+    } else if (opts.multi) {
+      input = '<textarea id="' + id + '" rows="' + (opts.rows || 3) + '" data-path="' + esc(JSON.stringify(path)) + '">' + esc(val) + '</textarea>';
+    } else {
+      input = '<input type="text" id="' + id + '" data-path="' + esc(JSON.stringify(path)) + '" value="' + esc(val) + '">';
+    }
+    let was = '';
+    if (st) {
+      const orig = getAt(path);
+      const fmt = v => Array.isArray(v) ? v.map(x => '• ' + x).join('\n') : (norm(v) == null ? '(empty)' : v);
+      was = st === 'conflict'
+        ? '<div class="field__was"><b>On GitHub now:</b> ' + esc(fmt(orig)) + '\n<b>When you started editing:</b> ' + esc(fmt(e.base)) +
+          '\n<button class="link" type="button" data-keep="' + esc(JSON.stringify(path)) + '">Keep mine</button></div>'
+        : '<div class="field__was"><b>Live now:</b> ' + esc(fmt(orig)) + '</div>';
+    }
+    return '<div class="field' + (st ? ' field--' + st : '') + '">' +
+      '<div class="field__top"><label for="' + id + (opts.list ? '-0' : '') + '">' + esc(label) + '</label>' + pill + revert +
+      (opts.hint ? '<span class="field__hint">' + esc(opts.hint) + '</span>' : '') + '</div>' + input + was + '</div>';
+  }
+
+  // ---- Sections ---------------------------------------------------------------------------
+  function trips() { return (state.files['site.json'] || {}).trips || []; }
+  function destFile(d) { return 'destinations/' + d + '.json'; }
+
+  function countFor(prefixFn) {
+    let draft = 0, shipped = 0, conflict = 0;
+    for (const e of state.edits.values()) {
+      if (!prefixFn(e.path)) continue;
+      const s = statusOf(e.path);
+      if (s === 'draft') draft++; else if (s === 'shipped') shipped++; else if (s === 'conflict') conflict++;
+    }
+    return conflict ? '<span class="dot dot--conflict" title="Conflicts">' + conflict + '</span>'
+      : draft ? '<span class="dot dot--draft" title="Edits">' + draft + '</span>'
+      : shipped ? '<span class="dot dot--shipped" title="In a pull request">' + shipped + '</span>' : '';
+  }
+
+  function renderNav() {
+    const site = state.files['site.json'];
+    if (!site) return;
+    let html = '<p class="nav__group label">Site</p>' + navItem('site', 'Profile, days and notes', p => p[0] === 'site.json');
+    for (const t of trips()) {
+      for (const d of t.destinations || []) {
+        const dest = state.files[destFile(d)];
+        if (!dest) continue;
+        html += '<p class="nav__group label">' + esc(dest.name) + '</p>' +
+          navItem('dest:' + d, 'Destination and upcoming', p => p[0] === destFile(d) && p[1] !== 'memories');
+        for (const m of dest.memories || []) {
+          html += navItem(d + '/' + m.id, shownValue([destFile(d), 'memories', 'id=' + m.id, 'title']) || m.id,
+            p => p[0] === destFile(d) && p[2] === 'id=' + m.id);
+        }
+      }
+    }
+    $('nav').innerHTML = html;
+  }
+  function navItem(key, label, match) {
+    return '<button class="nav__item" type="button" data-go="' + esc(key) + '" aria-current="' + (state.current === key) + '">' +
+      '<span class="nav__name">' + esc(label) + '</span>' + countFor(match) + '</button>';
+  }
+
+  function renderEditor() {
+    const ed = $('editor');
+    const site = state.files['site.json'];
+    if (!site) return;
+    const key = state.current;
+    let html = '';
+    if (key === 'site') {
+      const P = ['site.json', 'profile'];
+      html += head('Site', 'Profile, days and notes') +
+        panel('Profile', fieldHtml(P.concat('title'), 'Page title') + fieldHtml(P.concat('eyebrow'), 'Eyebrow') +
+          fieldHtml(P.concat('tagline'), 'Tagline', {multi: true, rows: 2}));
+      trips().forEach(t => {
+        const T = ['site.json', 'trips', 'id=' + t.id];
+        html += panel('Trip: ' + t.name, fieldHtml(T.concat('name'), 'Trip name') + fieldHtml(T.concat('dates'), 'Dates') +
+          (t.days || []).map(d => fieldHtml(T.concat('days', 'date=' + d.date, 'title'), 'Day title · ' + d.date)).join(''));
+      });
+      html += panel('Categories', (site.categories || []).map(c =>
+        fieldHtml(['site.json', 'categories', 'id=' + c.id, 'label'], 'Label for “' + c.id + '”')).join(''));
+      html += panel('Picked up along the way', (site.fieldNotes || []).map((n, i) =>
+        fieldHtml(['site.json', 'fieldNotes', '#' + i, 'label'], 'Note ' + (i + 1) + ' heading') +
+        fieldHtml(['site.json', 'fieldNotes', '#' + i, 'text'], 'Note ' + (i + 1) + ' text', {multi: true})).join(''));
+    } else if (key.startsWith('dest:')) {
+      const d = key.slice(5), dest = state.files[destFile(d)], F = destFile(d);
+      html += head(dest.name, 'Destination') +
+        panel('Destination', fieldHtml([F, 'name'], 'Name') + fieldHtml([F, 'dates'], 'Dates')) +
+        panel('On the list (upcoming)', (dest.upcoming || []).length ? (dest.upcoming || []).map((u, i) =>
+          fieldHtml([F, 'upcoming', '#' + i, 'title'], 'Slot ' + (i + 1) + ' title') +
+          fieldHtml([F, 'upcoming', '#' + i, 'hint'], 'Slot ' + (i + 1) + ' hint', {multi: true, rows: 2})).join('')
+          : '<p class="field__hint">No upcoming slots for this destination.</p>');
+    } else {
+      const [d, mid] = key.split('/');
+      const F = destFile(d), dest = state.files[F] || {};
+      const m = (dest.memories || []).find(x => x.id === mid);
+      if (!m) { state.current = 'site'; return renderAll(); }
+      const M = [F, 'memories', 'id=' + m.id];
+      html += head(shownValue(M.concat('title')) || m.title, dest.name + ' · ' + (m.collectedOn || m.date || '') + ' · ' + m.id) +
+        panel('Card', fieldHtml(M.concat('title'), 'Title') + fieldHtml(M.concat('area'), 'Area') +
+          fieldHtml(M.concat('period'), 'Period') +
+          fieldHtml(M.concat('summary'), 'Summary', {multi: true}) +
+          fieldHtml(M.concat('statusLabel'), 'Status label', {hint: 'Optional, e.g. “Seen from outside”'}) +
+          fieldHtml(M.concat('details'), 'Notes', {list: true}));
+      const media = m.media || [];
+      html += panel('Photos and videos (' + media.length + ')', media.length ? media.map(it => {
+        const thumb = 'thumbs/' + String((it.type === 'video' ? it.poster : it.file) || '').split('/').pop();
+        const MP = M.concat('media', 'file=' + it.file);
+        return '<div class="media"><img class="media__thumb" src="' + esc(thumb) + '" alt="" loading="lazy">' +
+          '<div class="media__fields"><span class="label">' + (it.type === 'video' ? 'Video · ' : '') + esc(it.file.split('/').pop()) + '</span>' +
+          fieldHtml(MP.concat('caption'), 'Caption', {multi: true, rows: 2, hint: 'Shown under the photo. Leave empty to show the description.'}) +
+          fieldHtml(MP.concat('alt'), 'Description (alt text)', {multi: true, rows: 2}) + '</div></div>';
+      }).join('') : '<p class="field__hint">No photos on this card.</p>');
+    }
+    const focus = document.activeElement && document.activeElement.id;
+    const pos = focus && document.activeElement.selectionStart;
+    ed.innerHTML = html + '<p class="saving" id="saving" aria-live="polite">' + esc(state.dbNote) + '</p>';
+    if (focus && $(focus)) { $(focus).focus(); try { $(focus).setSelectionRange(pos, pos); } catch (e) {} }
+  }
+  const head = (title, sub) => '<div class="editor__head"><span class="label">' + esc(sub) + '</span><h2>' + esc(title) + '</h2></div>';
+  const panel = (title, body) => '<section class="panel"><h3 class="panel__title">' + esc(title) + '</h3>' + body + '</section>';
+
+  function refreshChrome() {
+    const all = liveEdits();
+    const drafts = all.filter(e => statusOf(e.path) !== 'shipped');
+    const shipped = all.length - drafts.length;
+    const conflicts = all.filter(e => statusOf(e.path) === 'conflict').length;
+    const pill = $('draft-count');
+    pill.className = 'pill ' + (conflicts ? 'pill--conflict' : drafts.length ? 'pill--draft' : shipped ? 'pill--shipped' : 'pill--ok');
+    pill.textContent = drafts.length
+      ? drafts.length + (drafts.length === 1 ? ' edit' : ' edits') + ' not shipped' + (conflicts ? ' · ' + conflicts + ' to check' : '')
+      : shipped ? shipped + ' in a pull request' : 'No edits yet';
+    const pending = state.ship && (state.ship.status === 'requested' || state.ship.status === 'in_progress');
+    $('ship-btn').disabled = !drafts.length || !state.canWrite || pending;
+    $('ship-btn').textContent = drafts.length ? 'Ship ' + drafts.length + (drafts.length === 1 ? ' edit' : ' edits') : 'Ship edits';
+    renderNav();
+    renderShipStatus();
+  }
+  function renderAll() { refreshChrome(); renderEditor(); }
+
+  function renderShipStatus() {
+    const s = state.ship, el = $('ship-status');
+    if (!s || !s.status || s.status === 'idle') { el.hidden = true; return; }
+    const when = s.updatedAt || s.requestedAt;
+    const t = when ? new Date(when).toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'}) : '';
+    let html = '';
+    if (s.status === 'requested') {
+      html = '<span class="pill pill--draft">Ship requested</span><span>Waiting for Claude to pick it up · ' + esc(t) + '</span>' +
+        (s.notified ? '' : '<span>If nothing happens, tell Claude: <strong>' + esc(ASK_SHIP) + '</strong></span> <button class="btn btn--small" type="button" data-copy="ship">Copy</button>');
+    } else if (s.status === 'in_progress') {
+      html = '<span class="pill pill--draft">Working</span><span>Claude is applying your edits · ' + esc(t) + '</span>';
+    } else if (s.status === 'pr_open') {
+      html = '<span class="pill pill--shipped">PR open</span><span>' + esc(s.message || 'Your edits are in a pull request.') + '</span>' +
+        (s.prUrl ? '<a class="link" href="' + esc(s.prUrl) + '" target="_blank" rel="noopener">Review and merge on GitHub</a>' : '');
+    } else if (s.status === 'merged') {
+      html = '<span class="pill pill--ok">Merged</span><span>' + esc(s.message || 'Live on the site, and this editor is synced.') + ' · ' + esc(t) + '</span>';
+    } else if (s.status === 'error') {
+      html = '<span class="pill pill--conflict">Needs attention</span><span>' + esc(s.message || 'Claude could not ship these edits.') + '</span>';
+    } else if (s.status === 'sync_requested') {
+      html = '<span class="pill pill--draft">Sync requested</span><span>Waiting for Claude to refresh from GitHub · ' + esc(t) + '</span>';
+    }
+    el.innerHTML = html;
+    el.hidden = !html;
+  }
+
+  // ---- Talking to Claude ------------------------------------------------------------------
+  async function notifyClaude(text) {
+    try {
+      const mcp = await window.claude.use('mcp');
+      if (!mcp) return false;
+      await mcp.callTool(CONNECTOR, 'send_message', {session_id: SESSION_ID, message: text});
+      return true;
+    } catch (e) { return false; }
+  }
+
+  async function requestShip() {
+    const drafts = liveEdits().filter(e => statusOf(e.path) !== 'shipped');
+    const note = $('ship-note').value.trim();
+    $('ship-confirm').disabled = true;
+    const rec = {status: 'requested', requestedAt: new Date().toISOString(), count: drafts.length, note: note,
+      editIds: drafts.map(e => docId(e.path)), notified: false};
+    state.ship = rec; renderShipStatus();
+    try { await state.db.doc('ship/request').set(rec); }
+    catch (e) { $('ship-confirm').disabled = false; setSaving('Could not send the request. Try again.'); return; }
+    $('ship-panel').hidden = true; $('ship-note').value = ''; $('ship-confirm').disabled = false;
+    const ok = await notifyClaude(ASK_SHIP + ' ' + drafts.length + ' edits' + (note ? '. Note: ' + note : '') + '.');
+    if (ok) { state.ship = Object.assign({}, rec, {notified: true}); await state.db.doc('ship/request').update({notified: true}).catch(() => {}); }
+    refreshChrome();
+  }
+
+  async function requestSync() {
+    const btn = $('sync-btn');
+    btn.disabled = true;
+    const busy = state.ship && ['requested', 'in_progress'].includes(state.ship.status);
+    if (state.db && !busy) {
+      const rec = Object.assign({}, state.ship || {}, {status: 'sync_requested', updatedAt: new Date().toISOString()});
+      await state.db.doc('ship/request').set(rec).catch(() => {});
+    }
+    const ok = await notifyClaude(ASK_SYNC);
+    btn.textContent = ok ? 'Claude notified' : 'Copy request';
+    if (!ok) { copy(ASK_SYNC); btn.textContent = 'Request copied'; }
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Sync from GitHub'; }, 4000);
+  }
+
+  function copy(text) {
+    try { navigator.clipboard.writeText(text).catch(() => {}); } catch (e) {}
+  }
+
+  // ---- Events -----------------------------------------------------------------------------
+  document.addEventListener('click', ev => {
+    const t = ev.target.closest('button');
+    if (!t) return;
+    if (t.dataset.go) { state.current = t.dataset.go; renderAll(); $('editor').scrollIntoView({block: 'start'}); return; }
+    if (t.dataset.revert) {
+      const path = JSON.parse(t.dataset.revert);
+      clearTimeout(timers.get(docId(path)));
+      state.edits.delete(docId(path));
+      if (state.db) state.db.doc('edits/' + docId(path)).delete().catch(() => {});
+      renderAll(); return;
+    }
+    if (t.dataset.keep) {
+      const path = JSON.parse(t.dataset.keep), e = state.edits.get(docId(path));
+      if (e) save(path, e.value === null ? '' : e.value);
+      renderAll(); return;
+    }
+    if (t.dataset.add || t.dataset.remove !== undefined) {
+      const box = t.closest('[data-list]'), path = JSON.parse(box.dataset.list);
+      const items = [...box.querySelectorAll('textarea')].map(x => x.value);
+      if (t.dataset.add) items.push(''); else items.splice(+t.dataset.remove, 1);
+      save(path, items);
+      renderEditor();
+      if (t.dataset.add) { const tas = $('editor').querySelectorAll('[data-list] textarea'); if (tas.length) tas[tas.length - 1].focus(); }
+      return;
+    }
+    if (t.dataset.copy) { copy(ASK_SHIP); t.textContent = 'Copied'; return; }
+  });
+  document.addEventListener('input', ev => {
+    const t = ev.target;
+    if (t.dataset.path) { queueSave(JSON.parse(t.dataset.path), t.value); return; }
+    const box = t.closest && t.closest('[data-list]');
+    if (box) queueSave(JSON.parse(box.dataset.list), [...box.querySelectorAll('textarea')].map(x => x.value));
+  });
+  // Re-render on blur so pills and nav counts catch up without stealing focus while typing.
+  document.addEventListener('focusout', ev => {
+    if (ev.target.matches && ev.target.matches('#editor input, #editor textarea')) setTimeout(() => {
+      if (!document.activeElement || !document.activeElement.closest('#editor')) renderAll(); else refreshChrome();
+    }, 650);
+  });
+  $('ship-btn').addEventListener('click', () => {
+    const n = liveEdits().filter(e => statusOf(e.path) !== 'shipped').length;
+    $('ship-panel-title').textContent = 'Ship ' + n + (n === 1 ? ' edit' : ' edits');
+    $('ship-panel').hidden = false; $('ship-note').focus();
+  });
+  $('ship-cancel').addEventListener('click', () => { $('ship-panel').hidden = true; });
+  $('ship-confirm').addEventListener('click', requestShip);
+  $('sync-btn').addEventListener('click', requestSync);
+
+  // ---- Boot -------------------------------------------------------------------------------
+  async function loadContent() {
+    const get = p => fetch(p, {cache: 'no-store'}).then(r => { if (!r.ok) throw new Error(p); return r.json(); });
+    const site = await get('content/site.json');
+    state.files['site.json'] = site;
+    const dests = [].concat(...(site.trips || []).map(t => t.destinations || []));
+    await Promise.all(dests.map(d => get('content/' + destFile(d)).then(j => { state.files[destFile(d)] = j; })));
+    state.meta = await get('content/meta.json').catch(() => null);
+    const m = state.meta;
+    $('sync-line').textContent = m && m.commit
+      ? 'Content from GitHub main @ ' + m.commit.slice(0, 7) + (m.commitDate ? ' · ' + new Date(m.commitDate).toLocaleDateString([], {dateStyle: 'medium'}) : '')
+      : 'Content snapshot';
+  }
+
+  async function connectDb() {
+    const claude = window.claude;
+    const db = claude && await claude.use('db');
+    if (!db) { state.dbNote = 'Edits cannot be saved in this view. Open the editor on claude.ai while signed in.'; state.canWrite = false; renderAll(); return; }
+    state.db = db;
+    const user = await claude.use('user').catch(() => null);
+    if (user && typeof user.can === 'function') {
+      const can = await Promise.resolve(user.can('data.write')).catch(() => null);
+      if (can === false) { state.canWrite = false; state.dbNote = 'You can view edits here but not change them.'; }
+    }
+    let first = true;
+    const timer = setTimeout(() => { state.dbNote = 'Saved edits cannot be reached yet. Edits you make may not save.'; renderEditor(); }, 10000);
+    db.collection('edits').onSnapshot(snap => {
+      if (!snap.metadata.fromCache) { clearTimeout(timer); if (state.dbNote.startsWith('Saved edits')) state.dbNote = ''; }
+      const typing = document.activeElement && document.activeElement.closest && document.activeElement.closest('#editor');
+      const next = new Map();
+      snap.docs.forEach(d => { const v = d.data(); if (v && Array.isArray(v.path)) next.set(d.id, v); });
+      // Keep local values for fields with a pending save.
+      for (const id of timers.keys()) if (state.edits.has(id)) next.set(id, state.edits.get(id));
+      state.edits = next;
+      if (first || !typing) renderAll(); else refreshChrome();
+      first = false;
+    }, () => { clearTimeout(timer); state.dbNote = 'Saved edits could not be loaded. Reload the page to try again.'; renderEditor(); });
+    db.doc('ship/request').onSnapshot(snap => { state.ship = snap.exists ? snap.data() : null; refreshChrome(); }, () => {});
+  }
+
+  loadContent().then(() => {
+    renderAll();
+    if (window.claude && window.claude.use) connectDb();
+    else { state.dbNote = 'Edits cannot be saved in this view.'; state.canWrite = false; renderAll(); }
+  }).catch(() => {
+    $('editor').innerHTML = '<p class="empty">The trip content could not be loaded. Ask Claude to sync the editor from GitHub.</p>';
+  });
+})();
+</script>
