@@ -26,7 +26,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .label{font:500 .72rem var(--font-label);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 button{font:inherit;cursor:pointer}
-button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--border)}
 .bar__inner{max-width:1180px;margin:0 auto;padding-block:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
@@ -76,10 +76,10 @@ button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{
 .field__hint{font-size:.8rem;color:var(--muted)}
 .field__was{font-size:.82rem;color:var(--muted);background:var(--surface-alt);border-radius:8px;padding:6px 10px;white-space:pre-wrap}
 .field__was b{font-weight:600}
-input[type=text],textarea{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;padding:8px 10px}
+input[type=text],textarea,select{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;padding:8px 10px}
 textarea{resize:vertical;min-height:44px}
-.field--draft input,.field--draft textarea{border-color:var(--draft)}
-.field--conflict input,.field--conflict textarea{border-color:var(--danger)}
+.field--draft input,.field--draft textarea,.field--draft select{border-color:var(--draft)}
+.field--conflict input,.field--conflict textarea,.field--conflict select{border-color:var(--danger)}
 .list{display:grid;gap:8px}
 .list__row{display:flex;gap:8px;align-items:flex-start}
 .list__row textarea{flex:1}
@@ -233,15 +233,20 @@ textarea{resize:vertical;min-height:44px}
         items.map((t, i) => '<div class="list__row"><textarea rows="2" id="' + id + '-' + i + '" aria-label="' + esc(label) + ' ' + (i + 1) + '">' + esc(t) + '</textarea>' +
           '<button class="btn btn--small" type="button" data-remove="' + i + '" aria-label="Remove item ' + (i + 1) + '">Remove</button></div>').join('') +
         '<div class="list__row"><textarea rows="2" id="' + id + '-' + items.length + '" placeholder="' + esc(opts.placeholder || 'Add an item') + '" aria-label="New ' + esc(label.toLowerCase()) + '"></textarea></div></div>';
+    } else if (opts.choices) {
+      input = '<select id="' + id + '" data-path="' + esc(JSON.stringify(path)) + '">' +
+        opts.choices.map(c => '<option value="' + esc(c[0]) + '"' + ((val || opts.choices[0][0]) === c[0] ? ' selected' : '') + '>' + esc(c[1]) + '</option>').join('') +
+        '</select>';
     } else if (opts.multi) {
       input = '<textarea id="' + id + '" rows="' + (opts.rows || 3) + '" data-path="' + esc(JSON.stringify(path)) + '">' + esc(val) + '</textarea>';
     } else {
-      input = '<input type="text" id="' + id + '" data-path="' + esc(JSON.stringify(path)) + '" value="' + esc(val) + '">';
+      input = '<input type="text" id="' + id + '" data-path="' + esc(JSON.stringify(path)) + '" value="' + esc(val) + '"' +
+        (opts.placeholder ? ' placeholder="' + esc(opts.placeholder) + '"' : '') + '>';
     }
     let was = '';
     if (st) {
       const orig = getAt(path);
-      const fmt = v => Array.isArray(v) ? v.map(x => '• ' + x).join('\n') : (norm(v) == null ? '(empty)' : v);
+      const fmt = v => Array.isArray(v) ? v.map(x => '• ' + x).join('\n') : (norm(v) == null ? '(empty)' : (opts.choices && (opts.choices.find(c => c[0] === v) || [])[1]) || v);
       was = st === 'conflict'
         ? '<div class="field__was"><b>On GitHub now:</b> ' + esc(fmt(orig)) + '\n<b>When you started editing:</b> ' + esc(fmt(e.base)) +
           '\n<button class="link" type="button" data-keep="' + esc(JSON.stringify(path)) + '">Keep mine</button></div>'
@@ -330,7 +335,10 @@ textarea{resize:vertical;min-height:44px}
         panel('Card', fieldHtml(M.concat('title'), 'Title') + fieldHtml(M.concat('area'), 'Area') +
           fieldHtml(M.concat('period'), 'Period') +
           fieldHtml(M.concat('summary'), 'Summary', {multi: true}) +
-          fieldHtml(M.concat('statusLabel'), 'Status label', {hint: 'Optional, e.g. “Seen from outside”'}) +
+          fieldHtml(M.concat('status'), 'Status', {choices: STATUSES}) +
+          fieldHtml(M.concat('statusLabel'), 'Status text', {
+            placeholder: STATUS_TEXT[shownValue(M.concat('status')) || 'collected'],
+            hint: 'Optional. Replaces the status text on the card, e.g. “Seen from outside”.'}) +
           fieldHtml(M.concat('details'), 'Highlights', {list: true, placeholder: 'Add a highlight'}));
       const media = m.media || [];
       html += panel('Photos and videos (' + media.length + ')', media.length ? media.map(it => {
@@ -346,6 +354,9 @@ textarea{resize:vertical;min-height:44px}
     ed.innerHTML = html + '<p class="saving" id="saving" aria-live="polite">' + esc(state.dbNote) + '</p>';
     if (focus && $(focus)) { $(focus).focus(); try { $(focus).setSelectionRange(pos, pos); } catch (e) {} }
   }
+  // Card status values and the text the site shows for each (js/app.js LABELS).
+  const STATUSES = [['collected', 'Visited'], ['partial', 'Partly visited'], ['missed', 'Not visited']];
+  const STATUS_TEXT = {collected: 'Visited', partial: 'Partly visited', missed: 'Not visited'};
   const head = (title, sub) => '<div class="editor__head"><span class="label">' + esc(sub) + '</span><h2>' + esc(title) + '</h2></div>';
   const panel = (title, body) => '<section class="panel"><h3 class="panel__title">' + esc(title) + '</h3>' + body + '</section>';
 
@@ -475,7 +486,7 @@ textarea{resize:vertical;min-height:44px}
   }
   // Re-render on blur so pills and nav counts catch up without stealing focus while typing.
   document.addEventListener('focusout', ev => {
-    if (ev.target.matches && ev.target.matches('#editor input, #editor textarea')) setTimeout(() => {
+    if (ev.target.matches && ev.target.matches('#editor input, #editor textarea, #editor select')) setTimeout(() => {
       if (!document.activeElement || !document.activeElement.closest('#editor')) renderAll(); else refreshChrome();
     }, 650);
   });

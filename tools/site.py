@@ -354,8 +354,8 @@ def check(root, quiet=False):
                 for cid in (mcats if isinstance(mcats, list) else [mcats]):
                     if cid not in cats:
                         problems.append('%s: unknown category %r' % (mid, cid))
-                if m.get('status') not in ('collected', 'partial'):
-                    problems.append('%s: status must be collected or partial' % mid)
+                if m.get('status') not in ('collected', 'partial', 'missed'):
+                    problems.append('%s: status must be collected, partial or missed' % mid)
                 for k in MEMORY_REQUIRED:
                     if not m.get(k):
                         problems.append('%s: missing %s' % (mid, k))

@@ -35,7 +35,7 @@ memories[]   the cards, in collection order
 upcoming[]   empty "on the list" slots: title, hint
 ```
 
-A memory: `id`, `title`, `area`, `category` (one id, or a list of ids when it spans eras; the first is the main one), `period`, `date` (YYYY-MM-DD, drives the By day view), `collectedOn` (display text such as "25 Oct"), `status` (`collected` or `partial`), optional `statusLabel`, optional `emblem`, `summary`, `details[]`, `media[]`.
+A memory: `id`, `title`, `area`, `category` (one id, or a list of ids when it spans eras; the first is the main one), `period`, `date` (YYYY-MM-DD, drives the By day view), `collectedOn` (display text such as "25 Oct"), `status` (`collected`, `partial` or `missed`; shown as Visited, Partly visited, Not visited), optional `statusLabel`, optional `emblem`, `summary`, `details[]`, `media[]`.
 
 A media item: a photo is `{file, alt, focus?, takenAt?, geo?}`; `takenAt` is an ISO time with UTC offset and `geo` is `[lat, lon]`, both read from the original photo's metadata. The card shows the earliest time and a Map link to the first position. In the By day view cards are ordered by earliest `takenAt`; cards with no time come first, in file order. A video is `{type: "video", file, poster, alt}`. The first item shows on the card and swiping moves through the rest. A memory with no media shows its artwork instead. Every place also gets a badge (its artwork) on the Badges shelf: lit when collected, dimmed while it is an `upcoming` slot. Card numbers ("No. 07") come from the order of memories across trips and destinations, so they are never written by hand.
 
