@@ -466,27 +466,23 @@
       "media": [
         {
           "file": "photos/side-theatre-1.jpg",
-          "alt": "Two tall cranes rise above the ruined seating of the Side theatre, behind white restoration hoardings with the name Side Antik Kenti and ruined stone walls in front",
-          "focus": "50% 50%",
-          "caption": "The theatre behind restoration cranes"
+          "alt": "The theatre behind restoration cranes",
+          "focus": "50% 50%"
         },
         {
           "file": "photos/side-restored-columns-1.jpg",
-          "alt": "A weathered fluted column drum on a round base in the foreground, with restored columns and a steel scaffold carrying stone blocks behind restoration hoardings",
-          "focus": "50% 55%",
-          "caption": "Restored columns and scaffold"
+          "alt": "Restored columns and scaffold",
+          "focus": "50% 55%"
         },
         {
           "file": "photos/side-seafront-1.jpg",
-          "alt": "An old motorbike with a striped bag parked under a bare tree beside the sea, with a boat on the horizon and tall clouds over the water",
-          "focus": "40% 65%",
-          "caption": "A vintage motorbike on the clifftop by the sea"
+          "alt": "A vintage motorbike on the clifftop by the sea",
+          "focus": "40% 65%"
         },
         {
           "file": "photos/side-pomegranate-1.jpg",
-          "alt": "Wei holds up a halved pomegranate full of red seeds at a table under trees, with crates of pomegranates, a blue tractor and an old arched wall behind",
-          "focus": "45% 50%",
-          "caption": "A pomegranate, cut open under the trees"
+          "alt": "A pomegranate, cut open under the trees",
+          "focus": "45% 50%"
         }
       ],
       "geo": [
@@ -524,87 +520,74 @@
       "media": [
         {
           "file": "photos/olympos-12.jpg",
-          "alt": "Front-on view of the tall doorway in a wall of cut stone blocks, with a moulded frame and a carved lintel resting on scroll brackets, and wide stone steps in front",
-          "focus": "50% 45%",
-          "caption": "The monumental door of the Roman temple, Hadrian’s gate"
+          "alt": "The monumental door of the Roman temple, Hadrian’s gate",
+          "focus": "50% 45%"
         },
         {
           "file": "photos/olympos-13.jpg",
-          "alt": "A stone sarcophagus with a ship carved on its front and a face in the pediment of its lid, framed by two fluted column blocks, with a mosaic floor panel of a figure and an animal in front",
-          "focus": "50% 45%",
-          "caption": "The harbour tomb: a captain’s sarcophagus with a ship carved on the front"
+          "alt": "The harbour tomb: a captain’s sarcophagus with a ship carved on the front",
+          "focus": "50% 45%"
         },
         {
           "type": "video",
           "file": "videos/olympos-1.mp4",
           "poster": "photos/olympos-1-poster.jpg",
-          "alt": "Clip at the Olympos entrance: grey limestone slopes and pine forest above a dry-stone wall with a ruined arch, then white pampas plumes and bins at the car park under moving cloud",
+          "alt": "Arriving at Olympos, filmed near the entrance",
           "takenAt": "2026-11-05T15:48:09+03:00",
           "geo": [
             36.394,
             30.471
-          ],
-          "caption": "Arriving at Olympos, filmed near the entrance"
+          ]
         },
         {
           "file": "photos/olympos-2.jpg",
-          "alt": "A stone sarcophagus with a pointed-arch lid and a broken chamber beside it, seen through a gateway in a dry-stone wall under a cloudy sky",
-          "focus": "50% 40%",
-          "caption": "A sarcophagus seen through a wall gateway"
+          "alt": "A sarcophagus seen through a wall gateway",
+          "focus": "50% 40%"
         },
         {
           "file": "photos/olympos-3.jpg",
-          "alt": "Close view of a cracked sarcophagus with a framed Greek inscription panel on its front, and a broken opening beside it",
-          "focus": "60% 50%",
-          "caption": "The sarcophagus inscription, close up"
+          "alt": "The sarcophagus inscription, close up",
+          "focus": "60% 50%"
         },
         {
           "file": "photos/olympos-4.jpg",
-          "alt": "Ruined stone walls of the entrance complex with a lintel doorway at left, and a tall pine in front of forested slopes under a cloudy sky",
-          "focus": "50% 55%",
-          "caption": "The entrance complex"
+          "alt": "The entrance complex",
+          "focus": "50% 55%"
         },
         {
           "file": "photos/olympos-5.jpg",
-          "alt": "Inside the entrance complex: rubble-stone walls with gaps for doorways, dry grass in the foreground and pines behind",
-          "focus": "50% 55%",
-          "caption": "Inside the entrance complex"
+          "alt": "Inside the entrance complex",
+          "focus": "50% 55%"
         },
         {
           "file": "photos/olympos-6.jpg",
-          "alt": "A narrow stream running between ruined stone walls, with two column drums on a stepped stone base at right and a pine growing beside a wall under a cloudy sky",
-          "focus": "50% 55%",
-          "caption": "A stream running through the ruins"
+          "alt": "A stream running through the ruins",
+          "focus": "50% 55%"
         },
         {
           "file": "photos/olympos-7.jpg",
-          "alt": "A dirt path between low dry-stone walls leading toward a taller ruined building with arched openings, with forested slopes beyond",
-          "focus": "50% 55%",
-          "caption": "A path between dry-stone walls"
+          "alt": "A path between dry-stone walls",
+          "focus": "50% 55%"
         },
         {
           "file": "photos/olympos-8.jpg",
-          "alt": "Low rubble-stone wall lines and floors of a ruined building, with tall stone walls and small window openings behind and forested slopes above",
-          "focus": "50% 55%",
-          "caption": "Said to be a bath house built by Vespasian (not confirmed)"
+          "alt": "Said to be a bath house built by Vespasian (not confirmed)",
+          "focus": "50% 55%"
         },
         {
           "file": "photos/olympos-9.jpg",
-          "alt": "Szu Ker peeks over the Episcopal Palace information board, with a tall ruined stone wall rising behind him under a cloudy sky",
-          "focus": "50% 45%",
-          "caption": "Szu Ker at the Episcopal Palace board"
+          "alt": "Szu Ker at the Episcopal Palace board",
+          "focus": "50% 45%"
         },
         {
           "file": "photos/olympos-10.jpg",
-          "alt": "A block of pale stone set in a rubble wall, carved with seven lines of Greek capital letters, with a ruined wall and cloudy sky above",
-          "focus": "50% 40%",
-          "caption": "Greek inscription on a wall block at the Episcopal Palace"
+          "alt": "Greek inscription on a wall block at the Episcopal Palace",
+          "focus": "50% 40%"
         },
         {
           "file": "photos/olympos-11.jpg",
-          "alt": "A tall doorway with a moulded stone frame and lintel, set in a wall of neatly cut stone blocks, seen over low rubble walls with forested slopes behind",
-          "focus": "50% 60%",
-          "caption": "The Roman temple’s monumental doorway"
+          "alt": "The Roman temple’s monumental doorway",
+          "focus": "50% 60%"
         }
       ],
       "geo": [

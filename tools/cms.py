@@ -14,7 +14,7 @@ Turkey Trip editor (CMS) helper. See cms/README.md for the whole flow.
       Prints a JSON report: applied, unchanged, conflicts, missing.
 
 Paths address a value inside the content files:
-  ["destinations/istanbul.json", "memories", "id=blue-mosque", "media", "file=photos/blue-mosque-1.jpg", "caption"]
+  ["destinations/istanbul.json", "memories", "id=blue-mosque", "media", "file=photos/blue-mosque-1.jpg", "alt"]
   first segment   file under content/
   "key=value"     the list item whose `key` equals value (id, file, date)
   "#n"            the list item at index n (field notes, upcoming slots)
@@ -29,7 +29,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONTENT = os.path.join(ROOT, 'content')
-OPTIONAL = {'caption', 'statusLabel', 'hint'}
+OPTIONAL = {'statusLabel', 'hint'}
 THUMB_PX = 480
 
 

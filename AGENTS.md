@@ -49,7 +49,7 @@ A list with one block per destination (a single block also works):
 - `mapLink` is optional on any memory: a Google Maps link Wei pasted. The card then shows "Google Maps" in place of the default map link, which is built from photo GPS. Every food place should have one. Store the link exactly as Wei gave it. Short links (maps.app.goo.gl) cannot be opened from the workspace, so the restaurant name must come from Wei; never guess it. If he gave no name, use a plain title such as "Breakfast before Side" and ask.
 - `emblem` is optional. A missing emblem shows a map pin. The drawing appears on the Badges shelf (lit once the place is collected, dimmed while it is on the list) and on the card only when it has no photos or videos.
 - `focus` is where to centre the crop in the 4:5 photo frame, as "x% y%". Omit for centre.
-- `alt` is required on every photo and video.
+- `alt` is required on every photo and video. It is also the caption shown under the photo and in the full-size view, so keep it to one plain sentence. There is no separate `caption` field.
 
 ## Food places
 

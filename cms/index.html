@@ -228,10 +228,11 @@ textarea{resize:vertical;min-height:44px}
     let input;
     if (opts.list) {
       const items = Array.isArray(val) ? val : [];
+      // Every list ends with one empty box: typing in it adds an item, so cards with no items can get their first one.
       input = '<div class="list" data-list="' + esc(JSON.stringify(path)) + '">' +
         items.map((t, i) => '<div class="list__row"><textarea rows="2" id="' + id + '-' + i + '" aria-label="' + esc(label) + ' ' + (i + 1) + '">' + esc(t) + '</textarea>' +
-          '<button class="btn btn--small" type="button" data-remove="' + i + '" aria-label="Remove note ' + (i + 1) + '">Remove</button></div>').join('') +
-        '<div><button class="btn btn--small" type="button" data-add="1">Add note</button></div></div>';
+          '<button class="btn btn--small" type="button" data-remove="' + i + '" aria-label="Remove item ' + (i + 1) + '">Remove</button></div>').join('') +
+        '<div class="list__row"><textarea rows="2" id="' + id + '-' + items.length + '" placeholder="' + esc(opts.placeholder || 'Add an item') + '" aria-label="New ' + esc(label.toLowerCase()) + '"></textarea></div></div>';
     } else if (opts.multi) {
       input = '<textarea id="' + id + '" rows="' + (opts.rows || 3) + '" data-path="' + esc(JSON.stringify(path)) + '">' + esc(val) + '</textarea>';
     } else {
@@ -330,15 +331,14 @@ textarea{resize:vertical;min-height:44px}
           fieldHtml(M.concat('period'), 'Period') +
           fieldHtml(M.concat('summary'), 'Summary', {multi: true}) +
           fieldHtml(M.concat('statusLabel'), 'Status label', {hint: 'Optional, e.g. “Seen from outside”'}) +
-          fieldHtml(M.concat('details'), 'Notes', {list: true}));
+          fieldHtml(M.concat('details'), 'Highlights', {list: true, placeholder: 'Add a highlight'}));
       const media = m.media || [];
       html += panel('Photos and videos (' + media.length + ')', media.length ? media.map(it => {
         const thumb = 'thumbs/' + String((it.type === 'video' ? it.poster : it.file) || '').split('/').pop();
         const MP = M.concat('media', 'file=' + it.file);
         return '<div class="media"><img class="media__thumb" src="' + esc(thumb) + '" alt="" loading="lazy">' +
           '<div class="media__fields"><span class="label">' + (it.type === 'video' ? 'Video · ' : '') + esc(it.file.split('/').pop()) + '</span>' +
-          fieldHtml(MP.concat('caption'), 'Caption', {multi: true, rows: 2, hint: 'Shown under the photo. Leave empty to show the description.'}) +
-          fieldHtml(MP.concat('alt'), 'Description (alt text)', {multi: true, rows: 2}) + '</div></div>';
+          fieldHtml(MP.concat('alt'), 'Caption', {multi: true, rows: 2, hint: 'Shown under the photo, and read aloud by screen readers.'}) + '</div></div>';
       }).join('') : '<p class="field__hint">No photos on this card.</p>');
     }
     const focus = document.activeElement && document.activeElement.id;
@@ -452,13 +452,13 @@ textarea{resize:vertical;min-height:44px}
       if (e) save(path, e.value === null ? '' : e.value);
       renderAll(); return;
     }
-    if (t.dataset.add || t.dataset.remove !== undefined) {
+    if (t.dataset.remove !== undefined) {
       const box = t.closest('[data-list]'), path = JSON.parse(box.dataset.list);
-      const items = [...box.querySelectorAll('textarea')].map(x => x.value);
-      if (t.dataset.add) items.push(''); else items.splice(+t.dataset.remove, 1);
+      const items = listValues(box);
+      items.splice(+t.dataset.remove, 1);
+      clearTimeout(timers.get(docId(path))); timers.delete(docId(path));
       save(path, items);
       renderEditor();
-      if (t.dataset.add) { const tas = $('editor').querySelectorAll('[data-list] textarea'); if (tas.length) tas[tas.length - 1].focus(); }
       return;
     }
     if (t.dataset.copy) { copy(ASK_SHIP); t.textContent = 'Copied'; return; }
@@ -467,8 +467,12 @@ textarea{resize:vertical;min-height:44px}
     const t = ev.target;
     if (t.dataset.path) { queueSave(JSON.parse(t.dataset.path), t.value); return; }
     const box = t.closest && t.closest('[data-list]');
-    if (box) queueSave(JSON.parse(box.dataset.list), [...box.querySelectorAll('textarea')].map(x => x.value));
+    if (box) queueSave(JSON.parse(box.dataset.list), listValues(box));
   });
+  // A list's items, without the empty box at the end or any item cleared to nothing.
+  function listValues(box) {
+    return [...box.querySelectorAll('textarea')].map(x => x.value).filter(v => v.trim() !== '');
+  }
   // Re-render on blur so pills and nav counts catch up without stealing focus while typing.
   document.addEventListener('focusout', ev => {
     if (ev.target.matches && ev.target.matches('#editor input, #editor textarea')) setTimeout(() => {

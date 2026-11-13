@@ -15,11 +15,11 @@
 
   const LABELS = {
     loadError: 'The collection could not be loaded. Check that the JSON files in content/ are valid.',
-    keepsake: 'Keepsake notes',
-    statusCollected: 'Collected',
-    statusPartial: 'Partly collected',
+    keepsake: 'Highlights',
+    statusCollected: 'Visited',
+    statusPartial: 'Partly visited',
     upcomingTag: 'On the list',
-    upcomingStatus: 'Not collected yet',
+    upcomingStatus: 'Not visited yet',
     filterAll: 'All',
     statMemories: 'Memories',
     statCity: 'City',
@@ -34,7 +34,7 @@
     onTheList: 'On the list',
     map: 'Map',
     googleMap: 'Google Maps',
-    progressCollected: 'collected',
+    progressCollected: 'visited',
     progressUpcoming: 'on the list',
     badgesTitle: 'Badges',
     badgesLit: 'lit',
@@ -75,22 +75,22 @@
   // One slide per media item: a photo, or a video with a poster and a custom play button.
   function mediaSlide(item, first) {
     if (item.type === 'video') {
-      return '<div class="gallery__slide gallery__slide--video" data-playing="false" data-caption="' + esc(item.caption || item.alt) + '">' +
+      return '<div class="gallery__slide gallery__slide--video" data-playing="false" data-caption="' + esc(item.alt) + '">' +
         '<video class="gallery__video" src="' + esc(item.file) + '" poster="' + esc(item.poster || '') +
         '" muted loop playsinline preload="' + (first ? 'metadata' : 'none') + '" aria-label="' + esc(item.alt) + '"></video>' +
         '<button type="button" class="gallery__play" aria-label="' + LABELS.play + '"></button></div>';
     }
-    return '<div class="gallery__slide" data-caption="' + esc(item.caption || item.alt) + '"><img class="gallery__image" src="' + esc(item.file) + '" alt="' + esc(item.alt) +
+    return '<div class="gallery__slide" data-caption="' + esc(item.alt) + '"><img class="gallery__image" src="' + esc(item.file) + '" alt="' + esc(item.alt) +
       '" draggable="false" loading="' + (first ? 'eager' : 'lazy') + '"' +
       (item.focus ? ' style="object-position:' + esc(item.focus) + '"' : '') + '>' +
       '<button type="button" class="gallery__zoom" aria-label="' + LABELS.viewFull + '"></button></div>';
   }
 
-  // The line under the gallery. It follows the photo in view: a short `caption` if the item has one, else its alt text.
+  // The line under the gallery. It follows the photo in view and shows that item's `alt` text, which is its caption.
   function captionMarkup(m) {
     const first = (m.media || [])[0];
     if (!first) return '';
-    return '<p class="gallery__caption" aria-live="polite">' + esc(first.caption || first.alt) + '</p>';
+    return '<p class="gallery__caption" aria-live="polite">' + esc(first.alt) + '</p>';
   }
 
   // A memory with photos or videos shows only those. With none, its drawn artwork stands in as the picture.
