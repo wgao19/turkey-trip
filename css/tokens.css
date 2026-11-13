@@ -1,26 +1,43 @@
 /*
   DESIGN TOKENS
-  Every colour, font, size, space and shape decision lives in this file.
-  css/page.css only reads these variables, so restyling starts here.
-  The second and third blocks redefine the colour tokens for dark mode.
-  Category colours are looked up by category id: a category with id "roman"
-  uses --category-roman. A missing token falls back to --category-default.
+  Every colour, font, size, space, shape and motion decision lives in this file.
+  css/page.css and css/daymap.css only read these variables, so restyling starts here.
+  See docs/DESIGN.md for how the files fit together.
+
+  Blocks:
+    1. :root                        light theme, and every non-colour token
+    2. prefers-color-scheme: dark   dark colours when the device is in dark mode
+    3. :root[data-theme="dark"]     the same dark colours, for an explicit dark switch
+  Blocks 2 and 3 redefine colours only, and must stay identical to each other.
+
+  Category colours are looked up by category id: a category with id "roman" uses
+  --category-roman. A missing token falls back to --category-default.
+  tools/site.py adds a line here when a new category is created: keep each block's
+  --category-* lines together and in that block.
 */
 :root{
-  /* Colour: surfaces and text */
-  --color-page:#ECEFF5;
-  --color-surface:#FFFFFF;
-  --color-surface-alt:#F4F6FB;
+  /* ---- Colour: surfaces and text ---- */
+  --color-page:#ECEFF5;            /* page background */
+  --color-surface:#FFFFFF;         /* cards, panels */
+  --color-surface-alt:#F4F6FB;     /* buttons, image placeholders */
   --color-text:#0F1730;
   --color-text-muted:#55607A;
   --color-border:#D3DAE8;
-  --color-focus:#0E8F8C;
-  --color-highlight:#0E8F8C;
-  --color-overlay:rgba(10,15,31,.6);
-  --color-on-overlay:#FFFFFF;
-  --color-letterbox:#000000;
+  --color-focus:#0E8F8C;           /* keyboard focus ring */
+  --color-highlight:#0E8F8C;       /* links, field-note labels, map route */
+  --color-on-accent:#FFFFFF;       /* text on a category colour, e.g. map pin numbers */
+  --color-pin-outline:#FFFFFF;     /* ring around live map pins, over map tiles */
 
-  /* Colour: categories (one per category id in content/trips.json) */
+  /* ---- Colour: over photos ---- */
+  --color-overlay:rgba(10,15,31,.6);       /* round buttons and dots on photos */
+  --color-on-overlay:#FFFFFF;
+  --color-letterbox:#000000;               /* behind videos */
+  --color-lightbox:rgba(5,8,18,.98);       /* full-screen photo viewer backdrop */
+  --color-lightbox-text:#D5DBEA;
+  --color-lightbox-control:rgba(255,255,255,.14);
+  --color-on-lightbox-control:#FFFFFF;
+
+  /* ---- Colour: categories (one per category id in content/site.json) ---- */
   --category-default:#55607A;
   --category-roman:#B3363F;
   --category-byzantine:#6B3AA3;
@@ -28,25 +45,45 @@
   --category-modern:#0B7A5A;
   --category-food:#B45309;
 
-  /* Fonts (the Google Fonts link lives in index.html) */
+  /* ---- Fonts (the Google Fonts link lives in index.html) ---- */
   --font-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
   --font-body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-label:'DM Mono',ui-monospace,'SF Mono',Menlo,monospace;
 
-  /* Type scale */
-  --text-label:.72rem;
+  /* ---- Type: sizes ---- */
+  --text-micro:11px;               /* map scale bar and north arrow */
+  --text-label:.72rem;             /* uppercase mono labels */
   --text-small:.85rem;
-  --text-body:1rem;
+  --text-detail:.92rem;            /* highlight lists on cards */
   --text-summary:.95rem;
+  --text-body:1rem;
   --text-card-title:1.4rem;
   --text-destination:1.4rem;
-  --text-section:1.6rem;
+  --text-section:1.6rem;           /* Badges, Picked up along the way */
   --text-trip:2rem;
   --text-stat:2.1rem;
+  --text-avatar:34px;
   --text-name:clamp(2.5rem,8vw,3.75rem);
-  --tracking-label:.1em;
+  --text-pin:13px;                 /* numbers on map pins */
 
-  /* Spacing */
+  /* ---- Type: weights ---- */
+  --weight-label:500;              /* labels, filters, stop names */
+  --weight-strong:600;             /* badge names, map pin numbers */
+  --weight-heading:700;            /* card, destination and section titles, stats */
+  --weight-display:800;            /* page name, trip title, avatar initial */
+
+  /* ---- Type: line height and letter spacing ---- */
+  --leading-body:1.5;
+  --leading-caption:1.4;
+  --leading-heading:1.1;
+  --leading-trip:1.05;
+  --leading-name:.95;
+  --tracking-label:.1em;
+  --tracking-heading:-.01em;
+  --tracking-trip:-.015em;
+  --tracking-name:-.02em;
+
+  /* ---- Spacing scale ---- */
   --space-1:4px;
   --space-2:8px;
   --space-3:12px;
@@ -55,21 +92,59 @@
   --space-6:32px;
   --space-7:44px;
 
-  /* Shape */
+  /* ---- Spacing: layout ---- */
+  --page-pad-top:28px;
+  --page-pad-bottom:56px;
+  --gap-sections:var(--space-6);   /* between profile, bar, trips, notes, badges */
+  --gap-trips:var(--space-7);
+  --gap-trip:28px;                 /* inside a trip: header and destinations */
+  --gap-grid:20px;                 /* between cards, and between field notes */
+  --pad-bar:14px 18px;             /* collection bar */
+  --pad-card:14px var(--space-4) var(--space-4);
+
+  /* ---- Shape ---- */
   --radius-card:16px;
   --radius-badge:12px;
   --radius-pill:999px;
   --border-width:1px;
+  --border-width-strong:1.5px;     /* hollow status dots and empty progress slots */
+  --focus-width:2px;
 
-  /* Layout */
+  /* ---- Sizes ---- */
+  --size-avatar:84px;
+  --size-progress:20px;            /* progress dots in the collection bar */
+  --size-dot:9px;                  /* status and filter dots */
+  --size-control-sm:34px;          /* zoom button on photos */
+  --size-control:36px;             /* gallery arrows */
+  --size-control-lg:44px;          /* photo viewer close and arrows */
+  --size-play:64px;
+  --size-pin:26px;                 /* live map markers */
+
+  /* ---- Shadows ---- */
+  --shadow-pin:0 1px 4px rgba(0,0,0,.4);
+  /* Card and badge shadows are tinted with each card's category colour, in page.css. */
+
+  /* ---- Layout ---- */
   --content-max:1040px;
   --gutter:16px;
   --card-min:290px;
+  --badge-min:104px;
+  --note-min:260px;
   --media-ratio:4/5;
   --media-ratio-placeholder:3/2;
+  --map-ratio:16/9;
 
-  /* Motion */
+  /* ---- Motion ---- */
   --motion-fast:.2s;
+  --lift:-2px;                     /* how far cards and badges rise on hover */
+}
+
+/* Narrow screens: tokens that change with width */
+@media (max-width:480px){
+  :root{
+    --size-avatar:68px;
+    --text-avatar:28px;
+  }
 }
 
 @media (prefers-color-scheme: dark){
@@ -82,6 +157,7 @@
     --color-border:#25304D;
     --color-focus:#41D1CB;
     --color-highlight:#41D1CB;
+    --color-on-accent:#0A0F1F;
     --category-default:#9AA5C0;
     --category-roman:#F0808A;
     --category-byzantine:#BE98F2;
@@ -101,6 +177,7 @@
   --color-border:#25304D;
   --color-focus:#41D1CB;
   --color-highlight:#41D1CB;
+  --color-on-accent:#0A0F1F;
   --category-default:#9AA5C0;
   --category-roman:#F0808A;
   --category-byzantine:#BE98F2;

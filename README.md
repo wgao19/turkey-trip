@@ -14,6 +14,10 @@ Locally: `python3 -m http.server` in this folder, then open http://localhost:800
 
 The "By day" view draws a route map for each day. It uses [Leaflet](https://leafletjs.com/) (bundled in `vendor/leaflet/`) with standard OpenStreetMap tiles, which need no API key. If the tiles can't load, the page falls back to an offline SVG sketch of the route.
 
+## Design
+
+Restyling starts in `css/tokens.css`. See `docs/DESIGN.md` for the guide.
+
 ## Layout
 
 ```

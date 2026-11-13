@@ -2,6 +2,8 @@
   DAY MAP
   Styles the route map that js/daymap.js draws at the top of each day in the By day view.
   Colours, fonts, spacing and shape all come from the tokens in css/tokens.css.
+  Two layers: an SVG sketch (.daymap__svg) that always works, and a live Leaflet map
+  (.daymap__live) that replaces it on the GitHub Pages site once map tiles load.
 */
 .daymap{
   margin:0 0 var(--space-5);
@@ -22,7 +24,7 @@
   text-decoration:none;
   border-bottom:var(--border-width) solid currentColor;
 }
-.daymap__link:focus-visible{outline:2px solid var(--color-focus);outline-offset:3px}
+.daymap__link:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:3px}
 .daymap__svg{
   display:block;
   width:100%;
@@ -41,15 +43,15 @@
 .daymap__arrows polygon{fill:var(--color-highlight)}
 .daymap__pin{stroke:var(--color-surface);stroke-width:2.5}
 .daymap__num{
-  fill:#fff;
-  font:600 13px var(--font-body);
+  fill:var(--color-on-accent);
+  font:var(--weight-strong) var(--text-pin) var(--font-body);
   text-anchor:middle;
   dominant-baseline:central;
 }
 .daymap__scale{stroke:var(--color-text-muted);stroke-width:2;fill:none}
-.daymap__scale-text{fill:var(--color-text-muted);font:11px var(--font-label)}
+.daymap__scale-text{fill:var(--color-text-muted);font:var(--text-micro) var(--font-label)}
 .daymap__north-arrow{fill:var(--color-text-muted)}
-.daymap__north{fill:var(--color-text-muted);font:11px var(--font-label);text-anchor:middle}
+.daymap__north{fill:var(--color-text-muted);font:var(--text-micro) var(--font-label);text-anchor:middle}
 .daymap__summary,
 .daymap__missing{
   margin:0;
@@ -72,7 +74,7 @@
   text-decoration:none;
 }
 .daymap__stop:hover{background:var(--color-surface-alt)}
-.daymap__stop:focus-visible{outline:2px solid var(--color-focus);outline-offset:1px}
+.daymap__stop:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:1px}
 .daymap__dot{
   flex:none;
   display:inline-flex;
@@ -81,25 +83,19 @@
   width:24px;
   height:24px;
   border-radius:var(--radius-pill);
-  color:#fff;
-  font:600 .8rem var(--font-body);
+  color:var(--color-on-accent);
+  font:var(--weight-strong) .8rem var(--font-body);
   font-style:normal;
 }
-.daymap__stop-title{font-family:var(--font-body);font-size:var(--text-small);font-weight:500}
+.daymap__stop-title{font-family:var(--font-body);font-size:var(--text-small);font-weight:var(--weight-label)}
 .daymap__stop-area{color:var(--color-text-muted)}
 .daymap__missing{padding-bottom:var(--space-3)}
 
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) .daymap__num,
-  :root:not([data-theme="light"]) .daymap__dot{fill:#0A0F1F;color:#0A0F1F}
-}
-:root[data-theme="dark"] .daymap__num,
-:root[data-theme="dark"] .daymap__dot{fill:#0A0F1F;color:#0A0F1F}
 
 .daymap__canvas{position:relative}
 .daymap__live{
   width:100%;
-  aspect-ratio:16/9;
+  aspect-ratio:var(--map-ratio);
   min-height:260px;
   background:var(--color-surface-alt);
   border-top:var(--border-width) solid var(--color-border);
@@ -108,8 +104,8 @@
 }
 .daymap__marker span{
   display:flex;align-items:center;justify-content:center;
-  width:26px;height:26px;border-radius:50%;
-  border:2px solid #fff;color:#fff;
-  font:600 13px var(--font-body);
-  box-shadow:0 1px 4px rgba(0,0,0,.4);
+  width:var(--size-pin);height:var(--size-pin);border-radius:50%;
+  border:2px solid var(--color-pin-outline);color:var(--color-on-accent);
+  font:var(--weight-strong) var(--text-pin) var(--font-body);
+  box-shadow:var(--shadow-pin);
 }
