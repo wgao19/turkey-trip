@@ -69,7 +69,7 @@
     },
     {
       "id": "blue-mosque",
-      "title": "Blue Mosque",
+      "title": "Sultan Ahmed Mosque (Blue Mosque)",
       "area": "Sultanahmet",
       "category": "ottoman",
       "period": "1609–1616",
@@ -249,7 +249,7 @@
       "period": "Privy Chamber, c. 1578",
       "date": "2026-10-26",
       "collectedOn": "26 Oct",
-      "status": "collected",
+      "status": "missed",
       "emblem": "harem",
       "summary": "The sultan’s family quarters, about 400 rooms, run in practice by his mother, the Valide Sultan.",
       "details": [
