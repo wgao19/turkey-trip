@@ -11,6 +11,13 @@ python3 -m http.server      # in the repo root
 
 Opening `index.html` directly from disk will not work, because the page fetches its content from `content/*.json`. Push to `main` and GitHub Pages publishes the site at https://wgao19.github.io/turkey-trip/ within a minute or two.
 
+## Working in the Claude artifact
+
+The site is also published as a private Claude artifact, the Turkey Trip page: https://claude.ai/artifact/QBEo6i545XST7p37cCCaUR. You can restyle it there by asking Claude to change the files below and republish. Two things to know:
+
+- **The artifact and the GitHub repo are separate copies.** When the restyle is done, ask Claude to bring the artifact's style changes back into the repo as a pull request. While a restyle is in progress, keep content edits (text, photos) to one place, so the two copies don't drift apart.
+- **Map tiles don't load in the artifact.** The day maps show the drawn route sketch there. The live OpenStreetMap view only appears on GitHub Pages.
+
 ## Where things live
 
 | File | What to change there |
