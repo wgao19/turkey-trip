@@ -218,12 +218,14 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
       }).addTo(map);
       const ll = pts.map(p => [p[0], p[1]]);
-      if (ll.length > 1) L.polyline(ll, { color: '#0e8a7d', weight: 3, dashArray: '7 6' }).addTo(map);
+      // The route takes its colour from the --color-highlight token, so it follows the theme.
+      const route = getComputedStyle(box).getPropertyValue('--color-highlight').trim() || '#0E8F8C';
+      if (ll.length > 1) L.polyline(ll, { color: route, weight: 3, dashArray: '7 6' }).addTo(map);
       pts.forEach(p => L.marker([p[0], p[1]], {
         icon: L.divIcon({
           className: 'daymap__marker',
           html: '<span style="background:var(--category-' + esc(p[3]) + ',var(--category-default))">' + p[2] + '</span>',
-          iconSize: [26, 26], iconAnchor: [13, 13]
+          iconSize: [26, 26], iconAnchor: [13, 13]   // match --size-pin in css/tokens.css
         })
       }).addTo(map));
       map.fitBounds(ll, { padding: [36, 36], maxZoom: 16 });

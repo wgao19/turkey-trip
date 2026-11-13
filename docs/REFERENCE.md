@@ -55,10 +55,6 @@ Publish to the same artifact `url`; a publish without it makes a separate artifa
 
 ## Restyling (for designers)
 
-- Colours, fonts, type scale, spacing, radii and widths are tokens in `css/tokens.css`. Start there.
-- `css/page.css` styles components by BEM class names (`card`, `card__title`, `gallery__dot`). A component map is at the top of that file.
-- Markup comes from `js/app.js`. Inline styles exist only for data: `--accent` (category colour), `--ring` (avatar ring) and `object-position` (photo focus).
-- Keep the `data-slot` attributes in `index.html`.
-- The page runs in a locked-down frame. Scripts and stylesheets load from the artifact's own files, or from cdnjs, jsDelivr, unpkg and Google Fonts (stylesheets only). It must work at 400 px wide, in light and dark themes, without sideways scrolling.
-- Swiping is native CSS scroll-snap on `.gallery__track`. Restyle freely, but keep `overflow-x:auto`, `scroll-snap-type` and `scroll-snap-align`.
-- Videos use a custom play button (`.gallery__play`), no native controls, and are paused when swiped away.
+See `docs/DESIGN.md`: where the styles live, the token groups, light and dark themes, component states, the class names JavaScript depends on, and what to check after a change.
+
+The same page also runs in the Claude artifact, which only loads scripts and stylesheets from its own files, cdnjs, jsDelivr, unpkg and Google Fonts (stylesheets only). Keep new fonts and libraries to those hosts.
