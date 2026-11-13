@@ -18,6 +18,8 @@
     keepsake: 'Highlights',
     statusCollected: 'Visited',
     statusPartial: 'Partly visited',
+    statusMissed: 'Not visited',
+    progressMissed: 'not visited',
     upcomingTag: 'On the list',
     upcomingStatus: 'Not visited yet',
     filterAll: 'All',
@@ -295,8 +297,12 @@
   const firstGeo = m => { const it = (m.media || []).find(i => i.geo); return it ? it.geo : null; };
   const mapUrl = g => 'https://www.openstreetmap.org/?mlat=' + g[0] + '&mlon=' + g[1] + '#map=17/' + g[0] + '/' + g[1];
 
+  // A card counts as visited unless its status is "missed" (planned or nearby, but not gone into).
+  const visited = m => m.status !== 'missed';
+
   function cardMarkup(m, categoryLabel) {
-    const statusText = m.statusLabel || (m.status === 'partial' ? LABELS.statusPartial : LABELS.statusCollected);
+    const statusText =
+      (m.status === 'partial' ? LABELS.statusPartial : m.status === 'missed' ? LABELS.statusMissed : LABELS.statusCollected);
     const taken = clock(firstTaken(m));
     const geo = firstGeo(m);
     const details = (m.details || []).length
@@ -334,7 +340,7 @@
 
   /* ---------- Badges ---------- */
 
-  // One badge per place: lit (in its era colour) once collected, dimmed while it is still on the list.
+  // One badge per place: lit (in its era colour) once visited, dimmed while it is still on the list or was not visited.
   function badgeMarkup(title, emblem, accent, lit, href, note) {
     const inner = '<span class="badge__art">' + Emblems.render(emblem) + '</span><span class="badge__name">' + esc(title) + '</span>';
     const cls = 'badge' + (lit ? '' : ' badge--dim');
@@ -391,19 +397,23 @@
       [LABELS.statDays, dayCount]
     ].map(s => '<div class="stat"><dt class="stat__label label">' + esc(s[0]) + '</dt><dd class="stat__value">' + s[1] + '</dd></div>').join('');
 
+    const visitedCount = memories.filter(visited).length;
+    const missedCount = memories.length - visitedCount;
+
     /* Progress */
     slot('progress-slots').innerHTML =
-      memories.map(m => '<li class="progress__slot" ' + accentStyle(cats(m)[0]) + ' title="No. ' + pad(m.number) + ' ' + esc(m.title) + '"></li>').join('') +
+      memories.map(m => '<li class="progress__slot' + (visited(m) ? '' : ' progress__slot--empty') + '" ' + accentStyle(cats(m)[0]) + ' title="No. ' + pad(m.number) + ' ' + esc(m.title) + '"></li>').join('') +
       Array.from({ length: upcomingCount }, () => '<li class="progress__slot progress__slot--empty" title="' + LABELS.upcomingTag + '"></li>').join('');
-    slot('progress-caption').textContent = memories.length + ' ' + LABELS.progressCollected + ' · ' + upcomingCount + ' ' + LABELS.progressUpcoming;
+    slot('progress-caption').textContent = visitedCount + ' ' + LABELS.progressCollected +
+      (missedCount ? ' · ' + missedCount + ' ' + LABELS.progressMissed : '') + ' · ' + upcomingCount + ' ' + LABELS.progressUpcoming;
 
     /* Badges */
     const badges = destinations.flatMap(d =>
-      (d.memories || []).map(m => badgeMarkup(m.title, m.emblem, cats(m)[0], true, m.id, m.statusLabel))
+      (d.memories || []).map(m => badgeMarkup(m.title, m.emblem, cats(m)[0], visited(m), m.id))
         .concat((d.upcoming || []).map(u => badgeMarkup(u.title, u.emblem, null, false)))
     );
     slot('badges').innerHTML = badges.join('');
-    slot('badges-caption').textContent = memories.length + ' ' + LABELS.badgesLit + ' · ' + upcomingCount + ' ' + LABELS.badgesDim;
+    slot('badges-caption').textContent = visitedCount + ' ' + LABELS.badgesLit + ' · ' + (upcomingCount + missedCount) + ' ' + LABELS.badgesDim;
     if (!badges.length) slot('badges').closest('.badges').hidden = true;
 
     /* Filters */
@@ -417,7 +427,7 @@
     /* Trips: grouped by place or by day */
     const labelsOf = m => cats(m).map(categoryLabel).join(' · ');
     const tripHead = t => {
-      const n = (t.destinations || []).reduce((sum, d) => sum + (d.memories || []).length, 0);
+      const n = (t.destinations || []).reduce((sum, d) => sum + (d.memories || []).filter(visited).length, 0);
       return '<div class="trip__header"><h2 class="trip__title">' + esc(t.name) + '</h2>' +
         '<p class="trip__meta label">' + esc(t.dates) + ' · ' + n + ' ' + LABELS.progressCollected + '</p></div>';
     };
@@ -454,7 +464,7 @@
         const places = Array.from(new Set(list.map(x => x.m.place))).join(', ');
         const heading = k ? LABELS.day + ' ' + (keys.indexOf(k) + 1) + ' · ' + dayLabel(k) : LABELS.undated;
         return block('day-' + (k || 'undated'), heading,
-          (dayTitles[k] ? dayTitles[k] + ' · ' : '') + places + ' · ' + list.length + ' ' + LABELS.progressCollected,
+          (dayTitles[k] ? dayTitles[k] + ' · ' : '') + places + ' · ' + list.filter(x => visited(x.m)).length + ' ' + LABELS.progressCollected,
           list.map(x => cardMarkup(x.m, labelsOf(x.m))).join(''),
           k && window.DayMap ? window.DayMap.markup(list.map(x => x.m)) : '');
       }).join('');

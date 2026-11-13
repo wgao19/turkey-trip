@@ -145,6 +145,7 @@ h1,h2,h3,h4,p,ul,ol,dl,dd{margin:0}
 .card__map{margin-left:auto;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
 .card__status-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none}
 .card[data-status="partial"] .card__status-dot,.card--placeholder .card__status-dot{background:none;border:1.5px solid var(--accent)}
+.card[data-status="missed"] .card__status-dot{background:none;border:1.5px dashed var(--color-text-muted)}
 .card__details{border-top:var(--border-width) dashed var(--color-border);padding-top:10px;margin-top:var(--space-1)}
 .card__details-summary{
   display:flex;justify-content:space-between;align-items:center;cursor:pointer;list-style:none;
