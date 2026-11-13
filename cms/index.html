@@ -76,7 +76,7 @@ button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible,
 .field__hint{font-size:.8rem;color:var(--muted)}
 .field__was{font-size:.82rem;color:var(--muted);background:var(--surface-alt);border-radius:8px;padding:6px 10px;white-space:pre-wrap}
 .field__was b{font-weight:600}
-input[type=text],textarea,select{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;padding:8px 10px}
+input[type=text],input[type=date],textarea,select{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;padding:8px 10px}
 textarea{resize:vertical;min-height:44px}
 .field--draft input,.field--draft textarea,.field--draft select{border-color:var(--draft)}
 .field--conflict input,.field--conflict textarea,.field--conflict select{border-color:var(--danger)}
@@ -89,6 +89,25 @@ textarea{resize:vertical;min-height:44px}
 .media__fields{display:grid;gap:10px;min-width:0}
 @media (max-width:480px){.media{grid-template-columns:minmax(0,1fr)}.media__thumb{width:100%;max-width:220px}}
 .empty{padding:40px 16px;text-align:center;color:var(--muted)}
+.nav__item--card{padding-left:22px;font-size:.88rem}
+.nav__item--day{font-weight:600}
+.nav__date{flex:none;font:500 .72rem var(--font-label);color:var(--muted);letter-spacing:.04em}
+.nav__add{display:block;width:100%;text-align:left;margin:6px 0 2px;border:1px dashed var(--border);background:none;color:var(--accent);border-radius:8px;padding:7px 8px;font-weight:600;font-size:.88rem}
+.nav__add:hover{background:var(--surface-alt)}
+.pill--new{background:var(--draft-bg);color:var(--draft)}
+.places{display:grid;gap:6px}
+.places .nav__item{border:1px solid var(--border)}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media (max-width:560px){.row2{grid-template-columns:minmax(0,1fr)}}
+input[type=date]{width:100%;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;padding:7px 10px}
+.uploader{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.uploader input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+.uploader label.btn{display:inline-block}
+.uploader:focus-within label.btn{outline:2px solid var(--accent);outline-offset:2px}
+.media--new .media__thumb{outline:2px solid var(--draft);outline-offset:2px}
+.btn--danger{color:var(--danger);border-color:var(--danger)}
+.missing{font-size:.85rem;color:var(--draft);background:var(--draft-bg);border-radius:8px;padding:8px 10px}
+.skiplist{margin:0;padding-left:18px;font-size:.88rem}
 .saving{font-size:.8rem;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -97,7 +116,7 @@ textarea{resize:vertical;min-height:44px}
   <div class="bar__inner wrap">
     <h1 class="bar__title">Turkey Trip Editor<span class="bar__sub label" id="sync-line">Loading content…</span></h1>
     <div class="bar__actions">
-      <span class="pill pill--ok" id="draft-count">No edits yet</span>
+      <span class="pill pill--ok" id="draft-count">No changes yet</span>
       <button class="btn" id="sync-btn" type="button" title="Ask Claude to refresh this editor from the live site">Sync from GitHub</button>
       <button class="btn btn--primary" id="ship-btn" type="button" disabled>Ship edits</button>
     </div>
@@ -106,9 +125,10 @@ textarea{resize:vertical;min-height:44px}
   <div class="notice--band" id="ship-panel" hidden>
     <div class="shipbox wrap">
       <div><strong id="ship-panel-title">Ship edits</strong>
-        <p class="field__hint" style="margin:4px 0 0">Claude applies your edits to the repo and opens a pull request. Edits stay here until the PR is merged, and you can keep editing meanwhile.</p></div>
+        <p class="field__hint" style="margin:4px 0 0">Claude applies your changes to the repo and opens a pull request. They stay here until the PR is merged, and you can keep editing meanwhile.</p></div>
       <label for="ship-note" class="field__hint">Note for Claude (optional)</label>
-      <textarea id="ship-note" placeholder="Anything to know about these edits"></textarea>
+      <textarea id="ship-note" placeholder="Anything to know about these changes"></textarea>
+      <div id="ship-skips"></div>
       <div class="bar__actions">
         <button class="btn btn--primary" id="ship-confirm" type="button">Send to Claude</button>
         <button class="btn" id="ship-cancel" type="button">Cancel</button>
@@ -118,7 +138,7 @@ textarea{resize:vertical;min-height:44px}
 </header>
 
 <div class="main wrap">
-  <nav class="nav" id="nav" aria-label="Cards"></nav>
+  <nav class="nav" id="nav" aria-label="Days and places"></nav>
   <main class="editor" id="editor"><p class="empty">Loading the trip…</p></main>
 </div>
 
@@ -131,21 +151,25 @@ textarea{resize:vertical;min-height:44px}
   const CONNECTOR = 'Claude Code Remote';
   const ASK_SHIP = 'Ship my Turkey Trip editor edits (follow cms/README.md).';
   const ASK_SYNC = 'Sync the Turkey Trip editor from GitHub main (follow cms/README.md).';
+  // Card status values and the text the site shows for each (js/app.js LABELS).
+  const STATUSES = [['collected', 'Visited'], ['partial', 'Partly visited'], ['missed', 'Not visited']];
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const norm = v => (v === '' || v === undefined) ? null : v;
   const same = (a, b) => JSON.stringify(norm(a)) === JSON.stringify(norm(b));
+  const J = v => esc(JSON.stringify(v));
 
   const state = {
     files: {},           // "site.json" / "destinations/x.json" -> parsed JSON
     meta: null,
-    edits: new Map(),    // doc id -> edit record
+    edits: new Map(),    // doc id -> edit to an existing value {path, value, base, state}
+    adds: new Map(),     // doc id -> new day, new place, or new photos for an existing card
     ship: null,
-    current: 'site',     // selected section: "site" or "<dest>/<memoryId>" or "dest:<dest>"
-    db: null,
+    current: '',         // "day:<date>", "card:<dest>/<id>", "add:<doc id>", "newday", "site", "dest:<dest>"
+    db: null, assets: null,
     canWrite: true,
-    dbNote: ''
+    dbNote: '', uploadNote: ''
   };
 
   // ---- Paths into the content files -------------------------------------------------------
@@ -176,17 +200,30 @@ textarea{resize:vertical;min-height:44px}
     return 'draft';
   }
   function liveEdits() {
-    return [...state.edits.values()].filter(e => {
-      const s = statusOf(e.path);
-      return s === 'draft' || s === 'conflict' || s === 'shipped';
-    });
+    return [...state.edits.values()].filter(e => statusOf(e.path));
   }
   function shownValue(path) {
     const e = state.edits.get(docId(path));
     return e && statusOf(path) ? e.value : getAt(path);
   }
 
-  // ---- Saving -----------------------------------------------------------------------------
+  // Additions: what still needs filling in before they can ship.
+  function missingOf(a) {
+    const miss = [];
+    if (a.kind === 'day' && !(a.title || '').trim()) miss.push('day title');
+    if (a.kind === 'place') {
+      [['dest', 'destination'], ['date', 'date'], ['title', 'title'], ['area', 'area'], ['period', 'period'], ['summary', 'summary']]
+        .forEach(([k, label]) => { if (!(a[k] || '').trim()) miss.push(label); });
+      if (!(a.category || []).filter(Boolean).length) miss.push('tag');
+    }
+    const noCap = (a.media || []).filter(m => !(m.alt || '').trim()).length;
+    if (noCap) miss.push(noCap === 1 ? 'a photo caption' : noCap + ' photo captions');
+    return miss;
+  }
+  const activeAdds = () => [...state.adds.values()].filter(a => !(a.kind === 'photos' && !(a.media || []).length));
+  const draftAdds = () => activeAdds().filter(a => a.state !== 'shipped');
+
+  // ---- Saving edits to existing values -----------------------------------------------------
   const timers = new Map();
   function queueSave(path, value) {
     const id = docId(path);
@@ -195,6 +232,13 @@ textarea{resize:vertical;min-height:44px}
     setSaving('Saving…');
   }
   let saveChain = Promise.resolve();
+  function write(fn) {
+    saveChain = saveChain.then(fn)
+      .then(() => setSaving('All changes saved'))
+      .catch(err => setSaving(err && err.code === 'invalid_argument'
+        ? 'You can view but not save edits on this page.' : 'Could not save. Check your connection and edit again.'));
+    return saveChain;
+  }
   function save(path, value) {
     const id = docId(path);
     const orig = getAt(path);
@@ -207,14 +251,73 @@ textarea{resize:vertical;min-height:44px}
     refreshChrome();
     if (!state.db) { setSaving('Not saved: storage is unavailable here'); return; }
     const ref = state.db.doc('edits/' + id);
-    saveChain = saveChain.then(() => (rec ? ref.set(rec) : ref.delete()))
-      .then(() => setSaving('All changes saved'))
-      .catch(err => setSaving(err && err.code === 'invalid_argument'
-        ? 'You can view but not save edits on this page.' : 'Could not save. Check your connection and edit again.'));
+    write(() => (rec ? ref.set(rec) : ref.delete()));
   }
   function setSaving(text) { const el = $('saving'); if (el) el.textContent = text; }
 
-  // ---- Field builders ---------------------------------------------------------------------
+  // ---- Saving additions -------------------------------------------------------------------
+  function putAdd(id, doc, now) {
+    doc.updatedAt = new Date().toISOString();
+    state.adds.set(id, doc);
+    const key = 'add:' + id;
+    clearTimeout(timers.get(key));
+    const go = () => { timers.delete(key); if (state.db) write(() => state.db.doc('adds/' + id).set(doc)); };
+    if (now) go(); else { timers.set(key, setTimeout(go, 600)); setSaving('Saving…'); }
+  }
+  function removeAdd(id) {
+    const a = state.adds.get(id);
+    state.adds.delete(id);
+    clearTimeout(timers.get('add:' + id)); timers.delete('add:' + id);
+    if (a && state.assets) (a.media || []).forEach(m => state.assets.delete(m.asset).catch(() => {}));
+    if (state.db) write(() => state.db.doc('adds/' + id).delete());
+  }
+  const rid = () => Math.random().toString(36).slice(2, 10);
+
+  // ---- Content lookups --------------------------------------------------------------------
+  const trips = () => (state.files['site.json'] || {}).trips || [];
+  const trip = () => trips()[trips().length - 1] || {id: '', days: []};
+  const destFile = d => 'destinations/' + d + '.json';
+  const destIds = () => [].concat(...trips().map(t => t.destinations || [])).filter(d => state.files[destFile(d)]);
+  const categories = () => (state.files['site.json'] || {}).categories || [];
+  const memPath = (d, mid) => [destFile(d), 'memories', 'id=' + mid];
+  const dayPath = date => ['site.json', 'trips', 'id=' + trip().id, 'days', 'date=' + date, 'title'];
+  const photosId = (d, mid) => 'photos-' + d + '-' + mid;
+
+  function allCards() {
+    const out = [];
+    destIds().forEach(d => (state.files[destFile(d)].memories || []).forEach((m, i) => {
+      const times = (m.media || []).map(x => x.takenAt).filter(Boolean).sort();
+      out.push({kind: 'card', key: 'card:' + d + '/' + m.id, d, m, i, date: shownValue(memPath(d, m.id).concat('date')) || '',
+        t: times[0] || '', title: shownValue(memPath(d, m.id).concat('title')) || m.id});
+    }));
+    return out;
+  }
+
+  // Days in order, each with its cards (same order as the site's By day view) and new places.
+  function buildDays() {
+    const days = new Map();
+    const day = date => { if (!days.has(date)) days.set(date, {date, cards: []}); return days.get(date); };
+    (trip().days || []).forEach(d => day(d.date));
+    activeAdds().forEach(a => { if (a.kind === 'day' && a.date) day(a.date); });
+    allCards().forEach(c => day(c.date).cards.push(c));
+    activeAdds().forEach(a => {
+      if (a.kind === 'place') day(a.date || '').cards.push({kind: 'add', key: 'add:' + a.id, a, title: a.title || 'New place', t: '~'});
+    });
+    const list = [...days.values()].sort((x, y) => (x.date || '9') < (y.date || '9') ? -1 : 1);
+    list.forEach((d, n) => {
+      d.n = d.date ? n + 1 : null;
+      d.cards.sort((a, b) => (a.kind === 'add') - (b.kind === 'add') ||
+        (!a.t && !b.t ? a.i - b.i : !a.t ? -1 : !b.t ? 1 : a.t < b.t ? -1 : a.t > b.t ? 1 : 0));
+      const site = (trip().days || []).find(x => x.date === d.date);
+      const add = state.adds.get('day-' + d.date);
+      d.title = site ? shownValue(dayPath(d.date)) : add ? add.title : '';
+      d.isNew = !site && !!add;
+    });
+    return list;
+  }
+  const fmtDay = iso => iso ? new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', {weekday: 'short', day: 'numeric', month: 'short'}) : 'Undated';
+
+  // ---- Field builders: existing values ----------------------------------------------------
   function fieldHtml(path, label, opts) {
     opts = opts || {};
     const st = statusOf(path);
@@ -224,151 +327,308 @@ textarea{resize:vertical;min-height:44px}
     const pill = st === 'draft' ? '<span class="pill pill--draft">Edited</span>'
       : st === 'shipped' ? '<span class="pill pill--shipped">In PR' + (e.pr ? ' #' + esc(e.pr) : '') + '</span>'
       : st === 'conflict' ? '<span class="pill pill--conflict">Changed on GitHub</span>' : '';
-    const revert = st ? '<button class="link" type="button" data-revert="' + esc(JSON.stringify(path)) + '">Revert</button>' : '';
-    let input;
-    if (opts.list) {
-      const items = Array.isArray(val) ? val : [];
-      // Every list ends with one empty box: typing in it adds an item, so cards with no items can get their first one.
-      input = '<div class="list" data-list="' + esc(JSON.stringify(path)) + '">' +
-        items.map((t, i) => '<div class="list__row"><textarea rows="2" id="' + id + '-' + i + '" aria-label="' + esc(label) + ' ' + (i + 1) + '">' + esc(t) + '</textarea>' +
-          '<button class="btn btn--small" type="button" data-remove="' + i + '" aria-label="Remove item ' + (i + 1) + '">Remove</button></div>').join('') +
-        '<div class="list__row"><textarea rows="2" id="' + id + '-' + items.length + '" placeholder="' + esc(opts.placeholder || 'Add an item') + '" aria-label="New ' + esc(label.toLowerCase()) + '"></textarea></div></div>';
-    } else if (opts.choices) {
-      input = '<select id="' + id + '" data-path="' + esc(JSON.stringify(path)) + '">' +
-        opts.choices.map(c => '<option value="' + esc(c[0]) + '"' + ((val || opts.choices[0][0]) === c[0] ? ' selected' : '') + '>' + esc(c[1]) + '</option>').join('') +
-        '</select>';
-    } else if (opts.multi) {
-      input = '<textarea id="' + id + '" rows="' + (opts.rows || 3) + '" data-path="' + esc(JSON.stringify(path)) + '">' + esc(val) + '</textarea>';
-    } else {
-      input = '<input type="text" id="' + id + '" data-path="' + esc(JSON.stringify(path)) + '" value="' + esc(val) + '"' +
-        (opts.placeholder ? ' placeholder="' + esc(opts.placeholder) + '"' : '') + '>';
-    }
+    const revert = st ? '<button class="link" type="button" data-revert="' + J(path) + '">Revert</button>' : '';
+    const input = inputHtml(id, val, opts, 'data-path="' + J(path) + '"', label);
     let was = '';
     if (st) {
       const orig = getAt(path);
       const fmt = v => Array.isArray(v) ? v.map(x => '• ' + x).join('\n') : (norm(v) == null ? '(empty)' : (opts.choices && (opts.choices.find(c => c[0] === v) || [])[1]) || v);
       was = st === 'conflict'
         ? '<div class="field__was"><b>On GitHub now:</b> ' + esc(fmt(orig)) + '\n<b>When you started editing:</b> ' + esc(fmt(e.base)) +
-          '\n<button class="link" type="button" data-keep="' + esc(JSON.stringify(path)) + '">Keep mine</button></div>'
+          '\n<button class="link" type="button" data-keep="' + J(path) + '">Keep mine</button></div>'
         : '<div class="field__was"><b>Live now:</b> ' + esc(fmt(orig)) + '</div>';
     }
+    return fieldWrap(id, label, opts, pill + revert, input + was, st);
+  }
+  function fieldWrap(id, label, opts, extra, body, st) {
     return '<div class="field' + (st ? ' field--' + st : '') + '">' +
-      '<div class="field__top"><label for="' + id + (opts.list ? '-0' : '') + '">' + esc(label) + '</label>' + pill + revert +
-      (opts.hint ? '<span class="field__hint">' + esc(opts.hint) + '</span>' : '') + '</div>' + input + was + '</div>';
+      '<div class="field__top"><label for="' + id + (opts.list ? '-0' : '') + '">' + esc(label) + '</label>' + (extra || '') +
+      (opts.hint ? '<span class="field__hint">' + esc(opts.hint) + '</span>' : '') + '</div>' + body + '</div>';
+  }
+  // One input of any kind. `bind` is the data attribute that says where its value goes.
+  function inputHtml(id, val, opts, bind, label) {
+    const dis = opts.readonly ? ' disabled' : '';
+    if (opts.list) {
+      const items = Array.isArray(val) ? val : [];
+      // Every list ends with one empty box: typing in it adds an item, so cards with no items can get their first one.
+      return '<div class="list" ' + bind.replace('data-', 'data-list-') + ' data-list="1">' +
+        items.map((t, i) => '<div class="list__row"><textarea rows="2" id="' + id + '-' + i + '" aria-label="' + esc(label) + ' ' + (i + 1) + '"' + dis + '>' + esc(t) + '</textarea>' +
+          (opts.readonly ? '' : '<button class="btn btn--small" type="button" data-remove="' + i + '" aria-label="Remove item ' + (i + 1) + '">Remove</button>') + '</div>').join('') +
+        (opts.readonly ? '' : '<div class="list__row"><textarea rows="2" id="' + id + '-' + items.length + '" placeholder="' + esc(opts.placeholder || 'Add an item') + '" aria-label="New ' + esc(label.toLowerCase()) + '"></textarea></div>') + '</div>';
+    }
+    if (opts.choices) {
+      return '<select id="' + id + '" ' + bind + dis + '>' +
+        (opts.blank ? '<option value=""' + (val ? '' : ' selected') + '>' + esc(opts.blank) + '</option>' : '') +
+        opts.choices.map(c => '<option value="' + esc(c[0]) + '"' + ((val || (opts.blank ? '' : opts.choices[0][0])) === c[0] ? ' selected' : '') + '>' + esc(c[1]) + '</option>').join('') +
+        '</select>';
+    }
+    if (opts.date) return '<input type="date" id="' + id + '" ' + bind + ' value="' + esc(val) + '"' + dis + '>';
+    if (opts.multi) return '<textarea id="' + id + '" rows="' + (opts.rows || 3) + '" ' + bind + dis + '>' + esc(val) + '</textarea>';
+    return '<input type="text" id="' + id + '" ' + bind + ' value="' + esc(val) + '"' +
+      (opts.placeholder ? ' placeholder="' + esc(opts.placeholder) + '"' : '') + dis + '>';
   }
 
-  // ---- Sections ---------------------------------------------------------------------------
-  function trips() { return (state.files['site.json'] || {}).trips || []; }
-  function destFile(d) { return 'destinations/' + d + '.json'; }
+  // ---- Field builders: additions ----------------------------------------------------------
+  function addField(a, key, label, opts) {
+    opts = Object.assign({readonly: a.state === 'shipped'}, opts || {});
+    const id = 'a-' + a.id + '-' + key.replace(/\./g, '_');
+    let val = a[key];
+    if (key === 'category.0') val = (a.category || [])[0] || '';
+    if (key === 'category.1') val = (a.category || [])[1] || '';
+    return fieldWrap(id, label, opts, '', inputHtml(id, val, opts, 'data-add="' + J([a.id, key]) + '"', label));
+  }
+  function setAddValue(id, key, value) {
+    const a = state.adds.get(id);
+    if (!a || a.state === 'shipped') return;
+    const doc = Object.assign({}, a);
+    if (key.startsWith('category.')) {
+      const c = (doc.category || []).slice(0, 2);
+      c[+key.slice(9)] = value;
+      doc.category = c.filter(Boolean).filter((x, i, all) => all.indexOf(x) === i);
+    } else doc[key] = value;
+    putAdd(id, doc);
+  }
 
-  function countFor(prefixFn) {
+  // Photos: the uploader and the photos waiting to ship (new places and existing cards).
+  function pendingPhotos(a) {
+    return (a.media || []).map((m, i) => {
+      const thumb = m.type === 'video'
+        ? '<video class="media__thumb" src="' + esc('/_blob/' + m.asset) + '" muted playsinline preload="metadata"></video>'
+        : '<img class="media__thumb" src="' + esc('/_blob/' + m.asset) + '" alt="">';
+      const id = 'p-' + a.id + '-' + i;
+      return '<div class="media media--new">' + thumb + '<div class="media__fields">' +
+        '<span class="label">New ' + (m.type === 'video' ? 'video' : 'photo') + ' · ' + esc(m.name || '') + '</span>' +
+        fieldWrap(id, 'Caption', {hint: 'Shown under the photo, and read aloud by screen readers.'}, '',
+          '<textarea id="' + id + '" rows="2" data-media="' + J([a.id, i]) + '"' + (a.state === 'shipped' ? ' disabled' : '') + '>' + esc(m.alt) + '</textarea>') +
+        (a.state === 'shipped' ? '' : '<div><button class="btn btn--small btn--danger" type="button" data-media-remove="' + J([a.id, i]) + '">Remove photo</button></div>') +
+        '</div></div>';
+    }).join('');
+  }
+  function uploader(target) {
+    if (!state.assets) return '<p class="field__hint">Adding photos needs edit access to this editor.</p>';
+    return '<div class="uploader"><input type="file" id="up-' + esc(target.join('-')) + '" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" data-upload="' + J(target) + '">' +
+      '<label class="btn btn--small" for="up-' + esc(target.join('-')) + '">Add photos</label>' +
+      '<span class="field__hint" id="upnote">' + esc(state.uploadNote || 'JPEG, PNG or MP4, up to 20 MB each. Date and place are read from the photo when it has them.') + '</span></div>';
+  }
+  async function upload(target, files) {
+    if (!state.assets || !files.length) return;
+    let id;
+    if (target[0] === 'card') {
+      id = photosId(target[1], target[2]);
+      if (!state.adds.has(id)) putAdd(id, {id, kind: 'photos', dest: target[1], memoryId: target[2], media: [], state: 'draft', createdAt: new Date().toISOString()}, true);
+    } else id = target[1];
+    let n = 0;
+    for (const f of files) {
+      n++;
+      state.uploadNote = 'Uploading ' + n + ' of ' + files.length + '…'; const u = $('upnote'); if (u) u.textContent = state.uploadNote;
+      try {
+        const r = await state.assets.upload(f);
+        const a = Object.assign({}, state.adds.get(id));
+        a.media = (a.media || []).concat({asset: r.id, name: f.name, type: f.type.startsWith('video') ? 'video' : 'photo', alt: ''});
+        putAdd(id, a, true);
+      } catch (e) {
+        state.uploadNote = f.name + ': ' + (e && e.code === 'unsupported_type' ? 'this file type is not supported. Use JPEG, PNG or MP4.'
+          : e && /size|large/i.test(e.message || '') ? 'too large (20 MB at most).' : 'could not be uploaded.');
+        renderAll(); return;
+      }
+    }
+    state.uploadNote = '';
+    renderAll();
+  }
+
+  // ---- Nav --------------------------------------------------------------------------------
+  function editCount(match) {
     let draft = 0, shipped = 0, conflict = 0;
     for (const e of state.edits.values()) {
-      if (!prefixFn(e.path)) continue;
+      if (!match(e.path)) continue;
       const s = statusOf(e.path);
       if (s === 'draft') draft++; else if (s === 'shipped') shipped++; else if (s === 'conflict') conflict++;
     }
-    return conflict ? '<span class="dot dot--conflict" title="Conflicts">' + conflict + '</span>'
-      : draft ? '<span class="dot dot--draft" title="Edits">' + draft + '</span>'
-      : shipped ? '<span class="dot dot--shipped" title="In a pull request">' + shipped + '</span>' : '';
+    return {draft, shipped, conflict};
   }
-
+  function dot(c) {
+    return c.conflict ? '<span class="dot dot--conflict" title="Conflicts">' + c.conflict + '</span>'
+      : c.draft ? '<span class="dot dot--draft" title="Edits">' + c.draft + '</span>'
+      : c.shipped ? '<span class="dot dot--shipped" title="In a pull request">' + c.shipped + '</span>' : '';
+  }
+  function cardCount(c) {
+    if (c.kind === 'add') return {draft: c.a.state === 'shipped' ? 0 : 1, shipped: c.a.state === 'shipped' ? 1 : 0, conflict: 0};
+    const n = editCount(p => p[0] === destFile(c.d) && p[2] === 'id=' + c.m.id);
+    const ph = state.adds.get(photosId(c.d, c.m.id));
+    if (ph && (ph.media || []).length) { if (ph.state === 'shipped') n.shipped++; else n.draft++; }
+    return n;
+  }
   function renderNav() {
-    const site = state.files['site.json'];
-    if (!site) return;
-    let html = '<p class="nav__group label">Site</p>' + navItem('site', 'Profile, days and notes', p => p[0] === 'site.json');
-    for (const t of trips()) {
-      for (const d of t.destinations || []) {
-        const dest = state.files[destFile(d)];
-        if (!dest) continue;
-        html += '<p class="nav__group label">' + esc(dest.name) + '</p>' +
-          navItem('dest:' + d, 'Destination and upcoming', p => p[0] === destFile(d) && p[1] !== 'memories');
-        for (const m of dest.memories || []) {
-          html += navItem(d + '/' + m.id, shownValue([destFile(d), 'memories', 'id=' + m.id, 'title']) || m.id,
-            p => p[0] === destFile(d) && p[2] === 'id=' + m.id);
-        }
-      }
-    }
+    if (!state.files['site.json']) return;
+    let html = '<p class="nav__group label">Days</p>';
+    buildDays().forEach(d => {
+      const total = {draft: 0, shipped: 0, conflict: 0};
+      const add = c => { total.draft += c.draft; total.shipped += c.shipped; total.conflict += c.conflict; };
+      d.cards.forEach(c => add(cardCount(c)));
+      if (d.date) add(editCount(p => docId(p) === docId(dayPath(d.date))));
+      if (d.isNew) total.draft++;
+      html += navBtn('day:' + d.date, (d.n ? 'Day ' + d.n + (d.title ? ' · ' + d.title : '') : 'Undated'), dot(total), 'nav__item--day', fmtDay(d.date));
+      d.cards.forEach(c => html += navBtn(c.key, c.title, c.kind === 'add' ? '<span class="pill pill--new">New</span>' : dot(cardCount(c)), 'nav__item--card'));
+    });
+    html += '<button class="nav__add" type="button" data-go="newday">+ Add a day</button>';
+    html += '<p class="nav__group label">Site</p>' + navBtn('site', 'Profile and notes', dot(editCount(p => p[0] === 'site.json' && p[3] !== 'days')));
+    destIds().forEach(d => html += navBtn('dest:' + d, state.files[destFile(d)].name, dot(editCount(p => p[0] === destFile(d) && p[1] !== 'memories'))));
     $('nav').innerHTML = html;
   }
-  function navItem(key, label, match) {
-    return '<button class="nav__item" type="button" data-go="' + esc(key) + '" aria-current="' + (state.current === key) + '">' +
-      '<span class="nav__name">' + esc(label) + '</span>' + countFor(match) + '</button>';
+  function navBtn(key, label, extra, cls, sub) {
+    return '<button class="nav__item ' + (cls || '') + '" type="button" data-go="' + esc(key) + '" aria-current="' + (state.current === key) + '">' +
+      '<span class="nav__name">' + esc(label) + '</span>' + (sub ? '<span class="nav__date">' + esc(sub) + '</span>' : '') + (extra || '') + '</button>';
   }
 
-  function renderEditor() {
-    const ed = $('editor');
-    const site = state.files['site.json'];
-    if (!site) return;
-    const key = state.current;
-    let html = '';
-    if (key === 'site') {
-      const P = ['site.json', 'profile'];
-      html += head('Site', 'Profile, days and notes') +
-        panel('Profile', fieldHtml(P.concat('title'), 'Page title') + fieldHtml(P.concat('eyebrow'), 'Eyebrow') +
-          fieldHtml(P.concat('tagline'), 'Tagline', {multi: true, rows: 2}));
-      trips().forEach(t => {
-        const T = ['site.json', 'trips', 'id=' + t.id];
-        html += panel('Trip: ' + t.name, fieldHtml(T.concat('name'), 'Trip name') + fieldHtml(T.concat('dates'), 'Dates') +
-          (t.days || []).map(d => fieldHtml(T.concat('days', 'date=' + d.date, 'title'), 'Day title · ' + d.date)).join(''));
-      });
-      html += panel('Categories', (site.categories || []).map(c =>
-        fieldHtml(['site.json', 'categories', 'id=' + c.id, 'label'], 'Label for “' + c.id + '”')).join(''));
-      html += panel('Picked up along the way', (site.fieldNotes || []).map((n, i) =>
-        fieldHtml(['site.json', 'fieldNotes', '#' + i, 'label'], 'Note ' + (i + 1) + ' heading') +
-        fieldHtml(['site.json', 'fieldNotes', '#' + i, 'text'], 'Note ' + (i + 1) + ' text', {multi: true})).join(''));
-    } else if (key.startsWith('dest:')) {
-      const d = key.slice(5), dest = state.files[destFile(d)], F = destFile(d);
-      html += head(dest.name, 'Destination') +
-        panel('Destination', fieldHtml([F, 'name'], 'Name') + fieldHtml([F, 'dates'], 'Dates')) +
-        panel('On the list (upcoming)', (dest.upcoming || []).length ? (dest.upcoming || []).map((u, i) =>
-          fieldHtml([F, 'upcoming', '#' + i, 'title'], 'Slot ' + (i + 1) + ' title') +
-          fieldHtml([F, 'upcoming', '#' + i, 'hint'], 'Slot ' + (i + 1) + ' hint', {multi: true, rows: 2})).join('')
-          : '<p class="field__hint">No upcoming slots for this destination.</p>');
-    } else {
-      const [d, mid] = key.split('/');
-      const F = destFile(d), dest = state.files[F] || {};
-      const m = (dest.memories || []).find(x => x.id === mid);
-      if (!m) { state.current = 'site'; return renderAll(); }
-      const M = [F, 'memories', 'id=' + m.id];
-      html += head(shownValue(M.concat('title')) || m.title, dest.name + ' · ' + (m.collectedOn || m.date || '') + ' · ' + m.id) +
-        panel('Card', fieldHtml(M.concat('title'), 'Title') + fieldHtml(M.concat('area'), 'Area') +
-          fieldHtml(M.concat('period'), 'Period') +
-          fieldHtml(M.concat('summary'), 'Summary', {multi: true}) +
-          fieldHtml(M.concat('status'), 'Status', {choices: STATUSES}) +
-          fieldHtml(M.concat('details'), 'Highlights', {list: true, placeholder: 'Add a highlight'}));
-      const media = m.media || [];
-      html += panel('Photos and videos (' + media.length + ')', media.length ? media.map(it => {
+  // ---- Views ------------------------------------------------------------------------------
+  const head = (title, sub) => '<div class="editor__head"><span class="label">' + esc(sub) + '</span><h2>' + esc(title) + '</h2></div>';
+  const panel = (title, body) => '<section class="panel"><h3 class="panel__title">' + esc(title) + '</h3>' + body + '</section>';
+  const destChoices = () => destIds().map(d => [d, state.files[destFile(d)].name]);
+  const catChoices = () => categories().map(c => [c.id, c.label]);
+
+  function viewDay(date) {
+    const d = buildDays().find(x => x.date === date);
+    if (!d) return viewDay((buildDays()[0] || {}).date);
+    let html = head(d.n ? 'Day ' + d.n + ' · ' + fmtDay(date) : 'Undated', d.isNew ? 'New day' : 'Day');
+    if (date) {
+      const siteDay = (trip().days || []).find(x => x.date === date);
+      let titleField;
+      if (siteDay) titleField = fieldHtml(dayPath(date), 'Day title');
+      else {
+        const a = state.adds.get('day-' + date) || {id: 'day-' + date, kind: 'day', date, title: '', state: 'draft', virtual: true};
+        titleField = addField(a, 'title', 'Day title', {hint: d.isNew ? '' : 'This day has no title yet.'});
+      }
+      html += panel('Day', titleField +
+        (d.isNew && !d.cards.length ? '<div><button class="btn btn--small btn--danger" type="button" data-delete-add="' + esc('day-' + date) + '">Remove this day</button></div>' : ''));
+    }
+    html += panel('Places (' + d.cards.length + ')',
+      '<div class="places">' + (d.cards.length ? d.cards.map(c => navBtn(c.key, c.title, c.kind === 'add' ? '<span class="pill pill--new">New</span>' : '')).join('')
+        : '<p class="field__hint">No places on this day yet.</p>') + '</div>' +
+      (date ? '<div><button class="btn btn--primary btn--small" type="button" data-newplace="' + esc(date) + '">Add a place on this day</button></div>' : ''));
+    return html;
+  }
+
+  function viewCard(d, mid) {
+    const F = destFile(d), dest = state.files[F] || {};
+    const m = (dest.memories || []).find(x => x.id === mid);
+    if (!m) return null;
+    const M = memPath(d, mid);
+    const media = m.media || [];
+    const ph = state.adds.get(photosId(d, mid));
+    let html = head(shownValue(M.concat('title')) || m.title, dest.name + ' · ' + fmtDay(shownValue(M.concat('date'))));
+    html += panel('Card', fieldHtml(M.concat('title'), 'Title') + fieldHtml(M.concat('area'), 'Area') +
+      '<div class="row2">' + fieldHtml(M.concat('date'), 'Date', {date: true}) + fieldHtml(M.concat('period'), 'Period') + '</div>' +
+      fieldHtml(M.concat('summary'), 'Summary', {multi: true}) +
+      fieldHtml(M.concat('status'), 'Status', {choices: STATUSES}) +
+      fieldHtml(M.concat('details'), 'Highlights', {list: true, placeholder: 'Add a highlight'}));
+    html += panel('Photos and videos (' + (media.length + (ph ? (ph.media || []).length : 0)) + ')',
+      media.map(it => {
         const thumb = 'thumbs/' + String((it.type === 'video' ? it.poster : it.file) || '').split('/').pop();
         const MP = M.concat('media', 'file=' + it.file);
         return '<div class="media"><img class="media__thumb" src="' + esc(thumb) + '" alt="" loading="lazy">' +
           '<div class="media__fields"><span class="label">' + (it.type === 'video' ? 'Video · ' : '') + esc(it.file.split('/').pop()) + '</span>' +
           fieldHtml(MP.concat('alt'), 'Caption', {multi: true, rows: 2, hint: 'Shown under the photo, and read aloud by screen readers.'}) + '</div></div>';
-      }).join('') : '<p class="field__hint">No photos on this card.</p>');
-    }
+      }).join('') + (ph ? pendingPhotos(ph) : '') +
+      (ph && ph.state === 'shipped' ? '<p class="field__hint">New photos are in a pull request. Add more after it merges.</p>' : uploader(['card', d, mid])));
+    return html;
+  }
+
+  function viewAdd(a) {
+    const miss = missingOf(a);
+    let html = head(a.title || 'New place', 'New place' + (a.date ? ' · ' + fmtDay(a.date) : ''));
+    if (a.state === 'shipped') html += '<p class="missing">This place is in a pull request' + (a.pr ? ' (#' + esc(a.pr) + ')' : '') + '. You can edit it after the PR merges.</p>';
+    else if (miss.length) html += '<p class="missing">Still needed before it can ship: ' + esc(miss.join(', ')) + '.</p>';
+    html += panel('Card',
+      '<div class="row2">' + addField(a, 'date', 'Date', {date: true}) + addField(a, 'dest', 'Destination', {choices: destChoices(), blank: 'Choose…'}) + '</div>' +
+      addField(a, 'title', 'Title', {placeholder: 'For a restaurant, its own name'}) +
+      addField(a, 'area', 'Area', {placeholder: 'e.g. Sultanahmet'}) +
+      '<div class="row2">' + addField(a, 'category.0', 'Tag', {choices: catChoices(), blank: 'Choose…'}) +
+        addField(a, 'category.1', 'Second tag (optional)', {choices: catChoices(), blank: 'None'}) + '</div>' +
+      addField(a, 'period', 'Period', {placeholder: 'e.g. 2nd c. CE, or Modern day'}) +
+      addField(a, 'summary', 'Summary', {multi: true}) +
+      addField(a, 'status', 'Status', {choices: STATUSES}) +
+      addField(a, 'details', 'Highlights', {list: true, placeholder: 'Add a highlight'}));
+    html += panel('Photos and videos (' + (a.media || []).length + ')', pendingPhotos(a) +
+      (a.state === 'shipped' ? '' : uploader(['add', a.id])));
+    if (a.state !== 'shipped') html += '<div><button class="btn btn--small btn--danger" type="button" data-delete-add="' + esc(a.id) + '">Delete this new place</button></div>';
+    return html;
+  }
+
+  function viewNewDay() {
+    const known = new Set(buildDays().map(d => d.date));
+    const last = [...known].filter(Boolean).sort().pop() || '';
+    let next = '';
+    if (last) { const t = new Date(last + 'T12:00:00'); t.setDate(t.getDate() + 1); next = t.toISOString().slice(0, 10); }
+    return head('Add a day', 'Days') + panel('New day',
+      '<div class="row2">' + fieldWrap('nd-date', 'Date', {}, '', '<input type="date" id="nd-date" value="' + esc(next) + '">') +
+      fieldWrap('nd-title', 'Day title', {}, '', '<input type="text" id="nd-title" placeholder="e.g. Kaş and the coast road">') + '</div>' +
+      '<p class="field__hint" id="nd-note"></p><div><button class="btn btn--primary btn--small" type="button" data-create-day="1">Add day</button></div>');
+  }
+
+  function viewSite() {
+    const site = state.files['site.json'], P = ['site.json', 'profile'];
+    let html = head('Site', 'Profile and notes') +
+      panel('Profile', fieldHtml(P.concat('title'), 'Page title') + fieldHtml(P.concat('eyebrow'), 'Eyebrow') +
+        fieldHtml(P.concat('tagline'), 'Tagline', {multi: true, rows: 2}));
+    trips().forEach(t => {
+      const T = ['site.json', 'trips', 'id=' + t.id];
+      html += panel('Trip', fieldHtml(T.concat('name'), 'Trip name') + fieldHtml(T.concat('dates'), 'Dates') +
+        '<p class="field__hint">Day titles are on each day’s page.</p>');
+    });
+    html += panel('Tags', categories().map(c => fieldHtml(['site.json', 'categories', 'id=' + c.id, 'label'], 'Label for “' + c.id + '”')).join(''));
+    html += panel('Picked up along the way', (site.fieldNotes || []).map((n, i) =>
+      fieldHtml(['site.json', 'fieldNotes', '#' + i, 'label'], 'Note ' + (i + 1) + ' heading') +
+      fieldHtml(['site.json', 'fieldNotes', '#' + i, 'text'], 'Note ' + (i + 1) + ' text', {multi: true})).join(''));
+    return html;
+  }
+
+  function viewDest(d) {
+    const dest = state.files[destFile(d)], F = destFile(d);
+    return head(dest.name, 'Destination') +
+      panel('Destination', fieldHtml([F, 'name'], 'Name') + fieldHtml([F, 'dates'], 'Dates')) +
+      panel('On the list (upcoming)', (dest.upcoming || []).length ? dest.upcoming.map((u, i) =>
+        fieldHtml([F, 'upcoming', '#' + i, 'title'], 'Slot ' + (i + 1) + ' title') +
+        fieldHtml([F, 'upcoming', '#' + i, 'hint'], 'Slot ' + (i + 1) + ' hint', {multi: true, rows: 2})).join('')
+        : '<p class="field__hint">No upcoming slots for this destination.</p>');
+  }
+
+  function renderEditor() {
+    if (!state.files['site.json']) return;
+    if (!state.current) state.current = 'day:' + ((buildDays()[0] || {}).date || '');
+    const key = state.current;
+    let html = null;
+    if (key.startsWith('day:')) html = viewDay(key.slice(4));
+    else if (key.startsWith('card:')) { const [d, mid] = key.slice(5).split('/'); html = viewCard(d, mid); }
+    else if (key.startsWith('add:')) { const a = state.adds.get(key.slice(4)); html = a ? viewAdd(a) : null; }
+    else if (key === 'newday') html = viewNewDay();
+    else if (key === 'site') html = viewSite();
+    else if (key.startsWith('dest:')) html = viewDest(key.slice(5));
+    if (html == null) { state.current = ''; return renderAll(); }
     const focus = document.activeElement && document.activeElement.id;
     const pos = focus && document.activeElement.selectionStart;
-    ed.innerHTML = html + '<p class="saving" id="saving" aria-live="polite">' + esc(state.dbNote) + '</p>';
+    $('editor').innerHTML = html + '<p class="saving" id="saving" aria-live="polite">' + esc(state.dbNote) + '</p>';
     if (focus && $(focus)) { $(focus).focus(); try { $(focus).setSelectionRange(pos, pos); } catch (e) {} }
   }
-  // Card status values and the text the site shows for each (js/app.js LABELS).
-  const STATUSES = [['collected', 'Visited'], ['partial', 'Partly visited'], ['missed', 'Not visited']];
-  const head = (title, sub) => '<div class="editor__head"><span class="label">' + esc(sub) + '</span><h2>' + esc(title) + '</h2></div>';
-  const panel = (title, body) => '<section class="panel"><h3 class="panel__title">' + esc(title) + '</h3>' + body + '</section>';
 
+  // ---- Top bar ----------------------------------------------------------------------------
+  function counts() {
+    const edits = liveEdits();
+    const adds = activeAdds();
+    const draft = edits.filter(e => statusOf(e.path) !== 'shipped').length + adds.filter(a => a.state !== 'shipped').length;
+    const shipped = edits.filter(e => statusOf(e.path) === 'shipped').length + adds.filter(a => a.state === 'shipped').length;
+    const conflicts = edits.filter(e => statusOf(e.path) === 'conflict').length;
+    return {draft, shipped, conflicts};
+  }
   function refreshChrome() {
-    const all = liveEdits();
-    const drafts = all.filter(e => statusOf(e.path) !== 'shipped');
-    const shipped = all.length - drafts.length;
-    const conflicts = all.filter(e => statusOf(e.path) === 'conflict').length;
+    const c = counts();
     const pill = $('draft-count');
-    pill.className = 'pill ' + (conflicts ? 'pill--conflict' : drafts.length ? 'pill--draft' : shipped ? 'pill--shipped' : 'pill--ok');
-    pill.textContent = drafts.length
-      ? drafts.length + (drafts.length === 1 ? ' edit' : ' edits') + ' not shipped' + (conflicts ? ' · ' + conflicts + ' to check' : '')
-      : shipped ? shipped + ' in a pull request' : 'No edits yet';
+    pill.className = 'pill ' + (c.conflicts ? 'pill--conflict' : c.draft ? 'pill--draft' : c.shipped ? 'pill--shipped' : 'pill--ok');
+    pill.textContent = c.draft
+      ? c.draft + (c.draft === 1 ? ' change' : ' changes') + ' not shipped' + (c.conflicts ? ' · ' + c.conflicts + ' to check' : '')
+      : c.shipped ? c.shipped + ' in a pull request' : 'No changes yet';
     const pending = state.ship && (state.ship.status === 'requested' || state.ship.status === 'in_progress');
-    $('ship-btn').disabled = !drafts.length || !state.canWrite || pending;
-    $('ship-btn').textContent = drafts.length ? 'Ship ' + drafts.length + (drafts.length === 1 ? ' edit' : ' edits') : 'Ship edits';
+    $('ship-btn').disabled = !c.draft || !state.canWrite || pending;
+    $('ship-btn').textContent = c.draft ? 'Ship ' + c.draft + (c.draft === 1 ? ' change' : ' changes') : 'Ship changes';
     renderNav();
     renderShipStatus();
   }
@@ -384,14 +644,14 @@ textarea{resize:vertical;min-height:44px}
       html = '<span class="pill pill--draft">Ship requested</span><span>Waiting for Claude to pick it up · ' + esc(t) + '</span>' +
         (s.notified ? '' : '<span>If nothing happens, tell Claude: <strong>' + esc(ASK_SHIP) + '</strong></span> <button class="btn btn--small" type="button" data-copy="ship">Copy</button>');
     } else if (s.status === 'in_progress') {
-      html = '<span class="pill pill--draft">Working</span><span>Claude is applying your edits · ' + esc(t) + '</span>';
+      html = '<span class="pill pill--draft">Working</span><span>Claude is applying your changes · ' + esc(t) + '</span>';
     } else if (s.status === 'pr_open') {
-      html = '<span class="pill pill--shipped">PR open</span><span>' + esc(s.message || 'Your edits are in a pull request.') + '</span>' +
+      html = '<span class="pill pill--shipped">PR open</span><span>' + esc(s.message || 'Your changes are in a pull request.') + '</span>' +
         (s.prUrl ? '<a class="link" href="' + esc(s.prUrl) + '" target="_blank" rel="noopener">Review and merge on GitHub</a>' : '');
     } else if (s.status === 'merged') {
       html = '<span class="pill pill--ok">Merged</span><span>' + esc(s.message || 'Live on the site, and this editor is synced.') + ' · ' + esc(t) + '</span>';
     } else if (s.status === 'error') {
-      html = '<span class="pill pill--conflict">Needs attention</span><span>' + esc(s.message || 'Claude could not ship these edits.') + '</span>';
+      html = '<span class="pill pill--conflict">Needs attention</span><span>' + esc(s.message || 'Claude could not ship these changes.') + '</span>';
     } else if (s.status === 'sync_requested') {
       html = '<span class="pill pill--draft">Sync requested</span><span>Waiting for Claude to refresh from GitHub · ' + esc(t) + '</span>';
     }
@@ -409,17 +669,33 @@ textarea{resize:vertical;min-height:44px}
     } catch (e) { return false; }
   }
 
+  function openShipPanel() {
+    const c = counts();
+    const incomplete = draftAdds().filter(a => missingOf(a).length);
+    $('ship-panel-title').textContent = 'Ship ' + c.draft + (c.draft === 1 ? ' change' : ' changes');
+    $('ship-skips').innerHTML = incomplete.length
+      ? '<p class="missing" style="margin:0">These are not finished and will stay as drafts:</p><ul class="skiplist">' +
+        incomplete.map(a => '<li>' + esc(a.kind === 'day' ? 'Day ' + fmtDay(a.date) : a.kind === 'photos' ? 'New photos on ' + cardTitle(a) : (a.title || 'New place')) +
+          ': needs ' + esc(missingOf(a).join(', ')) + '</li>').join('') + '</ul>' : '';
+    $('ship-panel').hidden = false; $('ship-note').focus();
+  }
+  function cardTitle(a) {
+    const m = (state.files[destFile(a.dest)] || {memories: []}).memories.find(x => x.id === a.memoryId);
+    return m ? m.title : a.memoryId;
+  }
+
   async function requestShip() {
-    const drafts = liveEdits().filter(e => statusOf(e.path) !== 'shipped');
+    const c = counts();
     const note = $('ship-note').value.trim();
     $('ship-confirm').disabled = true;
-    const rec = {status: 'requested', requestedAt: new Date().toISOString(), count: drafts.length, note: note,
-      editIds: drafts.map(e => docId(e.path)), notified: false};
+    const rec = {status: 'requested', requestedAt: new Date().toISOString(), count: c.draft, note: note,
+      editIds: liveEdits().filter(e => statusOf(e.path) === 'draft').map(e => docId(e.path)),
+      addIds: draftAdds().filter(a => !missingOf(a).length).map(a => a.id), notified: false};
     state.ship = rec; renderShipStatus();
     try { await state.db.doc('ship/request').set(rec); }
     catch (e) { $('ship-confirm').disabled = false; setSaving('Could not send the request. Try again.'); return; }
     $('ship-panel').hidden = true; $('ship-note').value = ''; $('ship-confirm').disabled = false;
-    const ok = await notifyClaude(ASK_SHIP + ' ' + drafts.length + ' edits' + (note ? '. Note: ' + note : '') + '.');
+    const ok = await notifyClaude(ASK_SHIP + ' ' + c.draft + ' changes' + (note ? '. Note: ' + note : '') + '.');
     if (ok) { state.ship = Object.assign({}, rec, {notified: true}); await state.db.doc('ship/request').update({notified: true}).catch(() => {}); }
     refreshChrome();
   }
@@ -433,64 +709,115 @@ textarea{resize:vertical;min-height:44px}
       await state.db.doc('ship/request').set(rec).catch(() => {});
     }
     const ok = await notifyClaude(ASK_SYNC);
-    btn.textContent = ok ? 'Claude notified' : 'Copy request';
-    if (!ok) { copy(ASK_SYNC); btn.textContent = 'Request copied'; }
+    if (!ok) { copy(ASK_SYNC); btn.textContent = 'Request copied'; } else btn.textContent = 'Claude notified';
     setTimeout(() => { btn.disabled = false; btn.textContent = 'Sync from GitHub'; }, 4000);
   }
-
-  function copy(text) {
-    try { navigator.clipboard.writeText(text).catch(() => {}); } catch (e) {}
-  }
+  function copy(text) { try { navigator.clipboard.writeText(text).catch(() => {}); } catch (e) {} }
 
   // ---- Events -----------------------------------------------------------------------------
+  function go(key) { state.current = key; renderAll(); $('editor').scrollIntoView({block: 'start'}); }
+
   document.addEventListener('click', ev => {
     const t = ev.target.closest('button');
     if (!t) return;
-    if (t.dataset.go) { state.current = t.dataset.go; renderAll(); $('editor').scrollIntoView({block: 'start'}); return; }
-    if (t.dataset.revert) {
-      const path = JSON.parse(t.dataset.revert);
-      clearTimeout(timers.get(docId(path)));
-      state.edits.delete(docId(path));
-      if (state.db) state.db.doc('edits/' + docId(path)).delete().catch(() => {});
-      renderAll(); return;
-    }
-    if (t.dataset.keep) {
-      const path = JSON.parse(t.dataset.keep), e = state.edits.get(docId(path));
-      if (e) save(path, e.value === null ? '' : e.value);
-      renderAll(); return;
-    }
-    if (t.dataset.remove !== undefined) {
-      const box = t.closest('[data-list]'), path = JSON.parse(box.dataset.list);
-      const items = listValues(box);
-      items.splice(+t.dataset.remove, 1);
+    const ds = t.dataset;
+    if (ds.go) return go(ds.go);
+    if (ds.revert) {
+      const path = JSON.parse(ds.revert);
       clearTimeout(timers.get(docId(path))); timers.delete(docId(path));
-      save(path, items);
-      renderEditor();
-      return;
+      state.edits.delete(docId(path));
+      if (state.db) write(() => state.db.doc('edits/' + docId(path)).delete());
+      return renderAll();
     }
-    if (t.dataset.copy) { copy(ASK_SHIP); t.textContent = 'Copied'; return; }
+    if (ds.keep) {
+      const path = JSON.parse(ds.keep), e = state.edits.get(docId(path));
+      if (e) save(path, e.value === null ? '' : e.value);
+      return renderAll();
+    }
+    if (ds.remove !== undefined) {
+      const box = t.closest('[data-list]');
+      const items = listValues(box);
+      items.splice(+ds.remove, 1);
+      commitList(box, items, true);
+      return renderEditor();
+    }
+    if (ds.newplace !== undefined) {
+      const date = ds.newplace, day = buildDays().find(d => d.date === date);
+      const near = day && day.cards.find(c => c.kind === 'card');
+      const id = 'place-' + rid();
+      putAdd(id, {id, kind: 'place', date, dest: near ? near.d : destIds()[destIds().length - 1] || '', title: '', area: '',
+        category: [], period: '', summary: '', status: 'collected', details: [], media: [], state: 'draft', createdAt: new Date().toISOString()}, true);
+      return go('add:' + id);
+    }
+    if (ds.createDay) {
+      const date = $('nd-date').value, title = $('nd-title').value.trim();
+      if (!date) { $('nd-note').textContent = 'Choose a date.'; return; }
+      if (buildDays().some(d => d.date === date)) return go('day:' + date);
+      putAdd('day-' + date, {id: 'day-' + date, kind: 'day', date, title, state: 'draft', createdAt: new Date().toISOString()}, true);
+      return go('day:' + date);
+    }
+    if (ds.deleteAdd) {
+      if (!t.dataset.armed) { t.dataset.armed = '1'; t.textContent = 'Click again to delete'; return; }
+      const a = state.adds.get(ds.deleteAdd);
+      removeAdd(ds.deleteAdd);
+      return go(a && a.date ? 'day:' + a.date : '');
+    }
+    if (ds.mediaRemove) {
+      const [id, i] = JSON.parse(ds.mediaRemove);
+      const a = Object.assign({}, state.adds.get(id));
+      const gone = (a.media || [])[i];
+      a.media = (a.media || []).filter((_, j) => j !== i);
+      if (gone && state.assets) state.assets.delete(gone.asset).catch(() => {});
+      if (a.kind === 'photos' && !a.media.length) removeAdd(id); else putAdd(id, a, true);
+      return renderAll();
+    }
+    if (ds.copy) { copy(ASK_SHIP); t.textContent = 'Copied'; }
   });
+
   document.addEventListener('input', ev => {
     const t = ev.target;
-    if (t.dataset.path) { queueSave(JSON.parse(t.dataset.path), t.value); return; }
+    if (t.dataset.path) return queueSave(JSON.parse(t.dataset.path), t.value);
+    if (t.dataset.add) {
+      const [id, key] = JSON.parse(t.dataset.add);
+      if (!state.adds.has(id) && id.startsWith('day-')) {        // first title for a day that had none
+        state.adds.set(id, {id, kind: 'day', date: id.slice(4), title: '', state: 'draft', createdAt: new Date().toISOString()});
+      }
+      return setAddValue(id, key, t.value);
+    }
+    if (t.dataset.media) {
+      const [id, i] = JSON.parse(t.dataset.media);
+      const a = Object.assign({}, state.adds.get(id));
+      a.media = (a.media || []).map((m, j) => j === i ? Object.assign({}, m, {alt: t.value}) : m);
+      return putAdd(id, a);
+    }
     const box = t.closest && t.closest('[data-list]');
-    if (box) queueSave(JSON.parse(box.dataset.list), listValues(box));
+    if (box) commitList(box, listValues(box));
   });
+  document.addEventListener('change', ev => {
+    const t = ev.target;
+    if (t.dataset.upload) { const files = [...t.files]; t.value = ''; upload(JSON.parse(t.dataset.upload), files); }
+  });
+  function commitList(box, items, now) {
+    if (box.dataset.listPath) {
+      const path = JSON.parse(box.dataset.listPath);
+      if (now) { clearTimeout(timers.get(docId(path))); timers.delete(docId(path)); save(path, items); }
+      else queueSave(path, items);
+    } else if (box.dataset.listAdd) {
+      const [id, key] = JSON.parse(box.dataset.listAdd);
+      setAddValue(id, key, items);
+    }
+  }
   // A list's items, without the empty box at the end or any item cleared to nothing.
   function listValues(box) {
     return [...box.querySelectorAll('textarea')].map(x => x.value).filter(v => v.trim() !== '');
   }
   // Re-render on blur so pills and nav counts catch up without stealing focus while typing.
   document.addEventListener('focusout', ev => {
-    if (ev.target.matches && ev.target.matches('#editor input, #editor textarea, #editor select')) setTimeout(() => {
+    if (ev.target.matches && ev.target.matches('#editor input:not([type=file]), #editor textarea, #editor select')) setTimeout(() => {
       if (!document.activeElement || !document.activeElement.closest('#editor')) renderAll(); else refreshChrome();
     }, 650);
   });
-  $('ship-btn').addEventListener('click', () => {
-    const n = liveEdits().filter(e => statusOf(e.path) !== 'shipped').length;
-    $('ship-panel-title').textContent = 'Ship ' + n + (n === 1 ? ' edit' : ' edits');
-    $('ship-panel').hidden = false; $('ship-note').focus();
-  });
+  $('ship-btn').addEventListener('click', openShipPanel);
   $('ship-cancel').addEventListener('click', () => { $('ship-panel').hidden = true; });
   $('ship-confirm').addEventListener('click', requestShip);
   $('sync-btn').addEventListener('click', requestSync);
@@ -512,33 +839,41 @@ textarea{resize:vertical;min-height:44px}
   async function connectDb() {
     const claude = window.claude;
     const db = claude && await claude.use('db');
-    if (!db) { state.dbNote = 'Edits cannot be saved in this view. Open the editor on claude.ai while signed in.'; state.canWrite = false; renderAll(); return; }
+    if (!db) { state.dbNote = 'Changes cannot be saved in this view. Open the editor on claude.ai while signed in.'; state.canWrite = false; renderAll(); return; }
     state.db = db;
+    claude.use('assets').then(a => { state.assets = a; renderEditor(); }).catch(() => {});
     const user = await claude.use('user').catch(() => null);
     if (user && typeof user.can === 'function') {
       const can = await Promise.resolve(user.can('data.write')).catch(() => null);
-      if (can === false) { state.canWrite = false; state.dbNote = 'You can view edits here but not change them.'; }
+      if (can === false) { state.canWrite = false; state.dbNote = 'You can view changes here but not make them.'; }
     }
-    let first = true;
-    const timer = setTimeout(() => { state.dbNote = 'Saved edits cannot be reached yet. Edits you make may not save.'; renderEditor(); }, 10000);
+    const typing = () => document.activeElement && document.activeElement.closest && document.activeElement.closest('#editor');
+    let firstE = true, firstA = true;
+    const timer = setTimeout(() => { state.dbNote = 'Saved changes cannot be reached yet. Changes you make may not save.'; renderEditor(); }, 10000);
     db.collection('edits').onSnapshot(snap => {
-      if (!snap.metadata.fromCache) { clearTimeout(timer); if (state.dbNote.startsWith('Saved edits')) state.dbNote = ''; }
-      const typing = document.activeElement && document.activeElement.closest && document.activeElement.closest('#editor');
+      if (!snap.metadata.fromCache) { clearTimeout(timer); if (state.dbNote.startsWith('Saved changes')) state.dbNote = ''; }
       const next = new Map();
       snap.docs.forEach(d => { const v = d.data(); if (v && Array.isArray(v.path)) next.set(d.id, v); });
-      // Keep local values for fields with a pending save.
-      for (const id of timers.keys()) if (state.edits.has(id)) next.set(id, state.edits.get(id));
+      for (const id of timers.keys()) if (state.edits.has(id)) next.set(id, state.edits.get(id));   // pending saves win
       state.edits = next;
-      if (first || !typing) renderAll(); else refreshChrome();
-      first = false;
-    }, () => { clearTimeout(timer); state.dbNote = 'Saved edits could not be loaded. Reload the page to try again.'; renderEditor(); });
+      if (firstE || !typing()) renderAll(); else refreshChrome();
+      firstE = false;
+    }, () => { clearTimeout(timer); state.dbNote = 'Saved changes could not be loaded. Reload the page to try again.'; renderEditor(); });
+    db.collection('adds').onSnapshot(snap => {
+      const next = new Map();
+      snap.docs.forEach(d => { const v = d.data(); if (v && v.kind) next.set(d.id, Object.assign({}, v, {id: d.id})); });
+      for (const key of timers.keys()) if (key.startsWith('add:') && state.adds.has(key.slice(4))) next.set(key.slice(4), state.adds.get(key.slice(4)));
+      state.adds = next;
+      if (firstA || !typing()) renderAll(); else refreshChrome();
+      firstA = false;
+    }, () => {});
     db.doc('ship/request').onSnapshot(snap => { state.ship = snap.exists ? snap.data() : null; refreshChrome(); }, () => {});
   }
 
   loadContent().then(() => {
     renderAll();
     if (window.claude && window.claude.use) connectDb();
-    else { state.dbNote = 'Edits cannot be saved in this view.'; state.canWrite = false; renderAll(); }
+    else { state.dbNote = 'Changes cannot be saved in this view.'; state.canWrite = false; renderAll(); }
   }).catch(() => {
     $('editor').innerHTML = '<p class="empty">The trip content could not be loaded. Ask Claude to sync the editor from GitHub.</p>';
   });
