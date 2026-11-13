@@ -49,7 +49,7 @@ A list with one block per destination (a single block also works):
 - `mapLink` is optional on any memory: a Google Maps link Wei pasted. The card then shows "Google Maps" in place of the default map link, which is built from photo GPS. Every food place should have one. Store the link exactly as Wei gave it. Short links (maps.app.goo.gl) cannot be opened from the workspace, so the restaurant name must come from Wei; never guess it. If he gave no name, use a plain title such as "Breakfast before Side" and ask.
 - `emblem` is optional. A missing emblem shows a map pin. The drawing appears on the Badges shelf (lit once the place is collected, dimmed while it is on the list) and on the card only when it has no photos or videos.
 - `focus` is where to centre the crop in the 4:5 photo frame, as "x% y%". Omit for centre.
-- `alt` is required on every photo and video.
+- `alt` is required on every photo and video. It is also the caption shown under the photo and in the full-size view, so keep it to one plain sentence. There is no separate `caption` field.
 
 ## Food places
 
@@ -95,6 +95,10 @@ Photos become 1200 px JPEGs. Videos become H.264 MP4, at most 720 px wide (portr
 5. Write short, plain copy. No em-dash asides or marketing tone. Match the existing cards.
 6. Keep diacritics (Süleymaniye, Topkapı, İznik). Use "Türkiye".
 7. Never remove existing content unless Wei asks.
+
+## Text edits from the editor
+
+Wei edits captions and other text in the Turkey Trip Editor artifact. Ship and sync requests from it follow `cms/README.md`.
 
 ## More
 
