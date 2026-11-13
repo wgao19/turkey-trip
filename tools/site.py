@@ -26,7 +26,7 @@ VIDEO_ATTEMPTS = [(28, 720, 1280), (32, 540, 960)]
 GEO_DECIMALS = 3          # about 100 m: enough to find the place, not an exact doorstep
 MEMORY_REQUIRED = ('title', 'area', 'category', 'period', 'summary')
 MEMORY_ORDER = ('id', 'title', 'area', 'category', 'period', 'date', 'collectedOn', 'status',
-                'statusLabel', 'emblem', 'summary', 'details', 'media')
+                'emblem', 'summary', 'details', 'media')
 SLUG = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
 DATE = re.compile(r'^\d{4}-\d\d-\d\d$')
 # (light, dark) colours handed out to new categories that do not name their own

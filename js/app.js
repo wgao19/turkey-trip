@@ -301,7 +301,7 @@
   const visited = m => m.status !== 'missed';
 
   function cardMarkup(m, categoryLabel) {
-    const statusText = m.statusLabel ||
+    const statusText =
       (m.status === 'partial' ? LABELS.statusPartial : m.status === 'missed' ? LABELS.statusMissed : LABELS.statusCollected);
     const taken = clock(firstTaken(m));
     const geo = firstGeo(m);
@@ -409,7 +409,7 @@
 
     /* Badges */
     const badges = destinations.flatMap(d =>
-      (d.memories || []).map(m => badgeMarkup(m.title, m.emblem, cats(m)[0], visited(m), m.id, m.statusLabel))
+      (d.memories || []).map(m => badgeMarkup(m.title, m.emblem, cats(m)[0], visited(m), m.id))
         .concat((d.upcoming || []).map(u => badgeMarkup(u.title, u.emblem, null, false)))
     );
     slot('badges').innerHTML = badges.join('');

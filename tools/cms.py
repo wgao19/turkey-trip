@@ -29,7 +29,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONTENT = os.path.join(ROOT, 'content')
-OPTIONAL = {'statusLabel', 'hint'}
+OPTIONAL = {'hint'}
 THUMB_PX = 480
 
 
