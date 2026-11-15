@@ -520,7 +520,7 @@ input[type=date]{width:100%;border:1px solid var(--border);border-radius:9px;bac
       '<div class="row2">' + fieldHtml(M.concat('date'), 'Date', {date: true}) + fieldHtml(M.concat('period'), 'Period') + '</div>' +
       fieldHtml(M.concat('summary'), 'Summary', {multi: true}) +
       fieldHtml(M.concat('status'), 'Status', {choices: STATUSES}) +
-      fieldHtml(M.concat('details'), 'Highlights', {list: true, placeholder: 'Add a highlight'}));
+      fieldHtml(M.concat('details'), 'The story', {list: true, placeholder: 'Add a paragraph', hint: 'One paragraph per box, in order.'}));
     html += panel('Photos and videos (' + (media.length + (ph ? (ph.media || []).length : 0)) + ')',
       media.map(it => {
         const thumb = 'thumbs/' + String((it.type === 'video' ? it.poster : it.file) || '').split('/').pop();
@@ -547,7 +547,7 @@ input[type=date]{width:100%;border:1px solid var(--border);border-radius:9px;bac
       addField(a, 'period', 'Period', {placeholder: 'e.g. 2nd c. CE, or Modern day'}) +
       addField(a, 'summary', 'Summary', {multi: true}) +
       addField(a, 'status', 'Status', {choices: STATUSES}) +
-      addField(a, 'details', 'Highlights', {list: true, placeholder: 'Add a highlight'}));
+      addField(a, 'details', 'The story', {list: true, placeholder: 'Add a paragraph', hint: 'One paragraph per box, in order.'}));
     html += panel('Photos and videos (' + (a.media || []).length + ')', pendingPhotos(a) +
       (a.state === 'shipped' ? '' : uploader(['add', a.id])));
     if (a.state !== 'shipped') html += '<div><button class="btn btn--small btn--danger" type="button" data-delete-add="' + esc(a.id) + '">Delete this new place</button></div>';

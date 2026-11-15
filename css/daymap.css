@@ -1,111 +1,45 @@
 /*
   DAY MAP
-  Styles the route map that js/daymap.js draws at the top of each day in the By day view.
+  Styles the map that js/daymap.js draws beside the day view: an SVG route sketch with numbered pins,
+  and the live Leaflet map that replaces it where OpenStreetMap tiles can load.
   Colours, fonts, spacing and shape all come from the tokens in css/tokens.css.
-  Two layers: an SVG sketch (.daymap__svg) that always works, and a live Leaflet map
-  (.daymap__live) that replaces it on the GitHub Pages site once map tiles load.
+  Pin state is the data-state attribute: "current", "done" (already passed) or "todo".
+  The same attribute is set on the live map's marker, so both maps share these rules.
 */
-.daymap{
-  margin:0 0 var(--space-5);
-  background:var(--color-surface);
-  border:var(--border-width) solid var(--color-border);
-  border-radius:var(--radius-card);
-  overflow:hidden;
-}
-.daymap__head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:var(--space-3);
-  padding:var(--space-3) var(--space-4);
-}
-.daymap__link{
-  color:var(--color-highlight);
-  text-decoration:none;
-  border-bottom:var(--border-width) solid currentColor;
-}
-.daymap__link:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:3px}
-.daymap__svg{
-  display:block;
-  width:100%;
-  height:auto;
-  background:var(--color-surface-alt);
-  border-top:var(--border-width) solid var(--color-border);
-  border-bottom:var(--border-width) solid var(--color-border);
-}
-.daymap__grid line{stroke:var(--color-border);stroke-width:1;opacity:.7}
-.daymap__route line{
-  stroke:var(--color-highlight);
-  stroke-width:2.5;
-  stroke-dasharray:7 6;
-  stroke-linecap:round;
-}
-.daymap__arrows polygon{fill:var(--color-highlight)}
-.daymap__pin{stroke:var(--color-surface);stroke-width:2.5}
-.daymap__num{
-  fill:var(--color-on-accent);
-  font:var(--weight-strong) var(--text-pin) var(--font-body);
-  text-anchor:middle;
-  dominant-baseline:central;
-}
-.daymap__scale{stroke:var(--color-text-muted);stroke-width:2;fill:none}
-.daymap__scale-text{fill:var(--color-text-muted);font:var(--text-micro) var(--font-label)}
-.daymap__north-arrow{fill:var(--color-text-muted)}
-.daymap__north{fill:var(--color-text-muted);font:var(--text-micro) var(--font-label);text-anchor:middle}
-.daymap__summary,
-.daymap__missing{
-  margin:0;
-  padding:var(--space-3) var(--space-4) 0;
-  color:var(--color-text-muted);
-}
-.daymap__stops{
-  list-style:none;
-  margin:0;
-  padding:var(--space-2) var(--space-2) var(--space-3);
-}
-.daymap__stop{
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:var(--space-1) var(--space-3);
-  padding:var(--space-2);
-  border-radius:var(--radius-badge);
-  color:var(--color-text);
-  text-decoration:none;
-}
-.daymap__stop:hover{background:var(--color-surface-alt)}
-.daymap__stop:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:1px}
-.daymap__dot{
-  flex:none;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:24px;
-  height:24px;
-  border-radius:var(--radius-pill);
-  color:var(--color-on-accent);
-  font:var(--weight-strong) .8rem var(--font-body);
-  font-style:normal;
-}
-.daymap__stop-title{font-family:var(--font-body);font-size:var(--text-small);font-weight:var(--weight-label)}
-.daymap__stop-area{color:var(--color-text-muted)}
-.daymap__missing{padding-bottom:var(--space-3)}
+.daymap__sketch{position:absolute;inset:0}
+.daymap__svg{position:absolute;inset:0;width:100%;height:100%}
+.daymap__grid{fill:none;stroke:var(--color-border);stroke-width:1}
+.daymap__todo{fill:none;stroke:var(--color-text-muted);stroke-width:3;stroke-dasharray:8 7;stroke-linecap:round}
+.daymap__done{fill:none;stroke:var(--color-done);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.daymap__scalebar{fill:none;stroke:var(--color-text-muted);stroke-width:2}
+.daymap__scaletext{fill:var(--color-text-muted);font:17px var(--font-label)}
+.daymap__northmark path{fill:var(--color-text-muted)}
+.daymap__northmark text{fill:var(--color-text-muted);font:17px var(--font-label);text-anchor:middle}
+.daymap__empty{margin:0;padding:var(--space-4);color:var(--color-text-muted)}
 
-
-.daymap__canvas{position:relative}
-.daymap__live{
-  width:100%;
-  aspect-ratio:var(--map-ratio);
-  min-height:260px;
-  background:var(--color-surface-alt);
-  border-top:var(--border-width) solid var(--color-border);
-  border-bottom:var(--border-width) solid var(--color-border);
-  z-index:0;
+/* Pins: a 44px tap target around a round marker */
+.daymap__pin{
+  position:absolute;transform:translate(-50%,-50%);
+  width:var(--size-tap);height:var(--size-tap);padding:0;border:0;background:transparent;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font:inherit;
 }
-.daymap__marker span{
-  display:flex;align-items:center;justify-content:center;
+.daymap__pin-dot{
+  display:flex;align-items:center;justify-content:center;box-sizing:border-box;
   width:var(--size-pin);height:var(--size-pin);border-radius:50%;
-  border:2px solid var(--color-pin-outline);color:var(--color-on-accent);
+  background:var(--color-surface);color:var(--color-text);border:2px solid var(--color-text);
   font:var(--weight-strong) var(--text-pin) var(--font-body);
   box-shadow:var(--shadow-pin);
 }
+[data-state="done"] .daymap__pin-dot{background:var(--color-done);color:var(--color-on-done);border-color:transparent}
+[data-state="current"] .daymap__pin-dot{
+  width:var(--size-pin-current);height:var(--size-pin-current);
+  background:var(--color-action);color:var(--color-on-action);border-color:transparent;
+}
+.daymap__pin[data-state="current"]{z-index:2}
+.daymap__pin:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:-4px;border-radius:50%}
+
+/* Live map */
+.daymap__live{position:absolute;inset:0;z-index:0;background:var(--color-surface-alt)}
+.daymap__marker .daymap__pin{position:static;transform:none}
+.daymap__marker .daymap__pin-dot{border-color:var(--color-pin-outline)}
+.daymap__marker[data-state="todo"] .daymap__pin-dot{border-color:var(--color-text)}

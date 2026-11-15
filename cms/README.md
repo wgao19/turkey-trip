@@ -1,6 +1,6 @@
 # Turkey Trip Editor (CMS)
 
-A private Claude artifact where Wei edits the site, organised by day: card text, dates, statuses, highlights and photo captions, plus new days, new places and new photos. Changes are saved as drafts, so she can stop and come back. When she presses **Ship**, Claude turns the drafts into a pull request.
+A private Claude artifact where Wei edits the site, organised by day: card text, dates, statuses, story paragraphs and photo captions, plus new days, new places and new photos. Changes are saved as drafts, so she can stop and come back. When she presses **Ship**, Claude turns the drafts into a pull request.
 
 - Editor: https://claude.ai/artifact/BzbJGtK2NjTGdP1MYn5ftT
 - Page source: `cms/index.html` (published as the artifact's `index.html`)

@@ -3,6 +3,7 @@
   Loads content/site.json and content/destinations/*.json and renders the page into the slots in index.html.
   Nothing here is specific to Istanbul or Türkiye: add content in the JSON files only.
   Visible interface strings are collected in LABELS so they can be reworded in one place.
+  The By day view is drawn by js/dayview.js (with the map in js/daymap.js); this file hands it the shared helpers.
   Swiping is native scroll-snap on .gallery__track; this file only keeps dots and arrows
   in sync with where the track has scrolled. A memory's category may be one id or a list of ids:
   the first is its main one (card colour, avatar ring), and filters match any of them.
@@ -15,7 +16,7 @@
 
   const LABELS = {
     loadError: 'The collection could not be loaded. Check that the JSON files in content/ are valid.',
-    keepsake: 'Highlights',
+    keepsake: 'The story',
     statusCollected: 'Visited',
     statusPartial: 'Partly visited',
     statusMissed: 'Not visited',
@@ -43,6 +44,10 @@
     badgesDim: 'still to find',
     previous: 'Previous',
     next: 'Next',
+    themeAuto: 'Auto',
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    themeAria: 'Colour theme',
     viewFull: 'View the whole photo',
     closePhoto: 'Close',
     play: 'Play video',
@@ -243,7 +248,7 @@
     const sync = () => {
       const i = current();
       el.dataset.index = String(i);
-      const card = el.closest('.card');
+      const card = el.closest('.card, .stop');
       const cap = card && card.querySelector('.gallery__caption');
       if (cap && slides[i] && slides[i].dataset.caption !== undefined && cap.textContent !== slides[i].dataset.caption) cap.textContent = slides[i].dataset.caption;
       videoSlides.forEach(s => {
@@ -368,6 +373,8 @@
     slot('eyebrow').textContent = profile.eyebrow || '';
     slot('name').textContent = profile.title || profile.name || '';
     slot('tagline').textContent = profile.tagline || '';
+    slot('brand-name').textContent = profile.title || profile.name || '';
+    slot('brand-eyebrow').textContent = profile.eyebrow || '';
 
     const counts = {};
     categories.forEach(c => { counts[c.id] = 0; });
@@ -442,38 +449,6 @@
         '</div></div>'
       ).join('') + '</section>';
 
-    // Days run oldest first. Within a day, cards without a photo time come first (in file order),
-    // then cards with one in time order.
-    const dayTrip = t => {
-      const items = (t.destinations || []).flatMap(d => (d.memories || []).map(m => ({ m: m })));
-      items.forEach((x, i) => { x.i = i; x.t = firstTaken(x.m); });
-      const days = {};
-      items.forEach(x => { const k = x.m.date || ''; (days[k] = days[k] || []).push(x); });
-      const keys = Object.keys(days).sort((a, b) => (a === '' ? 1 : b === '' ? -1 : (a < b ? -1 : a > b ? 1 : 0)));
-      const block = (id, title, meta, cards, map) =>
-        '<div class="destination day" id="' + id + '"><div class="destination__header"><h3 class="destination__title">' + esc(title) +
-        '</h3><p class="destination__meta label">' + esc(meta) + '</p></div>' + (map || '') + '<div class="card-grid">' + cards + '</div></div>';
-      const dayTitles = {};
-      (t.days || []).forEach(x => { dayTitles[x.date] = x.title; });
-      const dayBlocks = keys.map(k => {
-        const list = days[k].slice().sort((a, b) => {
-          if (a.t && b.t) return a.t < b.t ? -1 : a.t > b.t ? 1 : a.i - b.i;
-          if (!a.t && !b.t) return a.i - b.i;
-          return a.t ? 1 : -1;
-        });
-        const places = Array.from(new Set(list.map(x => x.m.place))).join(', ');
-        const heading = k ? LABELS.day + ' ' + (keys.indexOf(k) + 1) + ' · ' + dayLabel(k) : LABELS.undated;
-        return block('day-' + (k || 'undated'), heading,
-          (dayTitles[k] ? dayTitles[k] + ' · ' : '') + places + ' · ' + list.filter(x => visited(x.m)).length + ' ' + LABELS.progressCollected,
-          list.map(x => cardMarkup(x.m, labelsOf(x.m))).join(''),
-          k && window.DayMap ? window.DayMap.markup(list.map(x => x.m)) : '');
-      }).join('');
-      const upcoming = (t.destinations || []).flatMap(d => d.upcoming || []);
-      return '<section class="trip" id="trip-' + esc(t.id) + '">' + tripHead(t) + dayBlocks +
-        (upcoming.length ? block('day-list', LABELS.onTheList, upcoming.length + ' ' + LABELS.progressUpcoming, upcoming.map(placeholderMarkup).join('')) : '') +
-        '</section>';
-    };
-
     /* Notes */
     const notes = data.fieldNotes || [];
     slot('notes').innerHTML = notes.map(n =>
@@ -495,11 +470,26 @@
       document.querySelectorAll('.filter').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === current)));
       requestAnimationFrame(() => galleries.forEach(g => g.sync()));
     };
+    let view = null;
     const draw = () => {
-      slot('trips').innerHTML = trips.map(mode === 'day' ? dayTrip : placeTrip).join('');
-      galleries = Array.from(document.querySelectorAll('.gallery[data-index]')).map(initGallery);
+      if (view) { view.destroy(); view = null; }
+      document.querySelector('.page').dataset.view = mode;
+      document.body.dataset.view = mode;
+      const tabs = slot('day-tabs');
+      if (tabs) tabs.innerHTML = '';
+      if (mode === 'day' && window.DayView) {
+        view = window.DayView.render(slot('trips'), {
+          trips: trips, esc: esc, LABELS: LABELS, DayMap: window.DayMap, dayMapLabels: window.DayMap.labels,
+          tabs: tabs, categoryLabel: categoryLabel, cats: cats, accentStyle: accentStyle,
+          firstTaken: firstTaken, dayLabel: dayLabel, mapUrl: mapUrl, reduceMotion: reduceMotion,
+          galleryMarkup: galleryMarkup, captionMarkup: captionMarkup, initGallery: initGallery
+        });
+        galleries = view.galleries;
+      } else {
+        slot('trips').innerHTML = trips.map(placeTrip).join('');
+        galleries = Array.from(document.querySelectorAll('.gallery[data-index]')).map(initGallery);
+      }
       apply();
-      if (window.DayMap) window.DayMap.mount();
     };
     window.addEventListener('resize', () => galleries.forEach(g => g.realign()));
     slot('filters').addEventListener('click', e => {
@@ -519,6 +509,31 @@
     });
     draw();
   }
+
+  /* ---------- Colour theme: follows the device, with a manual Auto / Light / Dark switch ---------- */
+  function initTheme() {
+    const btn = slot('theme');
+    if (!btn) return;
+    const KEY = 'turkey-trip-theme';
+    const order = ['auto', 'light', 'dark'];
+    const names = { auto: LABELS.themeAuto, light: LABELS.themeLight, dark: LABELS.themeDark };
+    let pref = 'auto';
+    try { pref = localStorage.getItem(KEY) || 'auto'; } catch (e) { /* storage can be blocked */ }
+    if (order.indexOf(pref) < 0) pref = 'auto';
+    const apply = () => {
+      const root = document.documentElement;
+      if (pref === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', pref);
+      btn.textContent = names[pref];
+      btn.setAttribute('aria-label', LABELS.themeAria + ': ' + (pref === 'auto' ? 'follows the device' : names[pref].toLowerCase()) + '. Change');
+    };
+    btn.addEventListener('click', () => {
+      pref = order[(order.indexOf(pref) + 1) % order.length];
+      try { localStorage.setItem(KEY, pref); } catch (e) { /* ignore */ }
+      apply();
+    });
+    apply();
+  }
+  initTheme();
 
   loadContent().then(render).catch(err => {
     const target = slot('trips');

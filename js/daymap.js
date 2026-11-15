@@ -1,35 +1,40 @@
 /*
   DAY MAP
-  Draws a small route map for one day: numbered pins joined by a dashed line, a scale bar and a stop list.
+  The map beside the day view (js/dayview.js). DayMap.create(box, memories, options) draws numbered pins
+  joined by a dashed line, a scale bar and a north arrow into `box`, and returns a handle:
+    setCurrent(i)   mark stop i (index into the day's memories) as current; earlier stops as done
+    destroy()       remove the live map, if one was mounted
+    href            a Google Maps link for the day's route, or ''
+    note            one line for under the map
+    mapped          how many stops have a position
   The SVG is a to-scale sketch that works anywhere. Where the page can reach OpenStreetMap (GitHub Pages
-  can; the Claude artifact frame cannot), mount() swaps it for a live Leaflet map with real tiles.
+  can; the Claude artifact frame cannot), the sketch is swapped for a live Leaflet map with real tiles.
   A stop's position is the memory's own `geo` ([lat, lon]) or the first photo's `geo`. Memories with
-  neither are left off the map and named underneath. app.js calls DayMap.markup(memories) once per day.
+  neither have no pin. options.onPick(i) is called when a pin is pressed.
 */
 (function () {
   'use strict';
 
-  const W = 640, H = 360, PAD = 48, BOTTOM = 22, MIN_SPAN_KM = 1;
-  const NICE_KM = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20];
+  const W = 500, H = 400, PAD = 56, FAN = 40, FAN_RADIUS = 30, MIN_SPAN_KM = 0.6;
+  const NICE_KM = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50];
 
   const LABELS = {
-    title: 'Route of the day',
     open: 'Open in Maps',
+    sketch: 'Sketch to scale, north up',
+    live: 'Positions are approximate',
+    noPin: ' has no pin',
+    noPins: ' have no pin',
     stop: 'stop',
     stops: 'stops',
-    straight: 'in a straight line',
-    unmapped: 'Not on the map',
-    north: 'N',
-    note: 'To-scale sketch, north up. Positions are approximate.',
-    liveNote: 'Positions are approximate.'
+    none: 'No locations for this day',
+    north: 'N'
   };
 
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const cats = m => (Array.isArray(m.category) ? m.category : [m.category]).filter(Boolean);
-  const accent = m => 'var(--category-' + esc(cats(m)[0] || 'default') + ',var(--category-default))';
   const rad = d => d * Math.PI / 180;
   const r1 = n => Math.round(n * 10) / 10;
+  const point = g => g[0] + ',' + g[1];
 
   function geoOf(m) {
     if (Array.isArray(m.geo) && m.geo.length === 2) return m.geo;
@@ -37,27 +42,14 @@
     return it ? it.geo : null;
   }
 
-  function distKm(a, b) {
-    const dLat = rad(b[0] - a[0]);
-    const dLon = rad(b[1] - a[1]);
-    const h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    return 6371 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
-  }
-
-  const lengthLabel = km => (km < 1 ? Math.round(km * 1000) + ' m' : (Math.round(km * 10) / 10) + ' km');
-  const point = g => g[0] + ',' + g[1];
-
   function mapsUrl(stops) {
-    if (stops.length === 1) {
-      return 'https://www.google.com/maps/search/?api=1&query=' + point(stops[0].g);
-    }
+    if (stops.length === 1) return 'https://www.google.com/maps/search/?api=1&query=' + point(stops[0].g);
     const mid = stops.slice(1, -1).slice(0, 9).map(s => point(s.g)).join('|');
     return 'https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=' + point(stops[0].g) +
       '&destination=' + point(stops[stops.length - 1].g) + (mid ? '&waypoints=' + encodeURIComponent(mid) : '');
   }
 
-  // Lay the stops out in an equal-area sketch: kilometres east and north of the average position.
+  // An equal-area sketch: kilometres east and north of the average position, scaled to fit.
   function layout(stops) {
     const lat0 = stops.reduce((n, s) => n + s.g[0], 0) / stops.length;
     const lon0 = stops.reduce((n, s) => n + s.g[1], 0) / stops.length;
@@ -68,11 +60,11 @@
     const minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
     const minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
     const spanX = Math.max(maxX - minX, MIN_SPAN_KM), spanY = Math.max(maxY - minY, MIN_SPAN_KM);
-    const scale = Math.min((W - 2 * PAD) / spanX, (H - 2 * PAD - BOTTOM) / spanY);
+    const scale = Math.min((W - 2 * PAD) / spanX, (H - 2 * PAD) / spanY);
     const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
     stops.forEach(s => {
       s.ox = W / 2 + (s.x - cx) * scale;
-      s.oy = (H - BOTTOM) / 2 + (s.y - cy) * scale;
+      s.oy = H / 2 + (s.y - cy) * scale;
       s.px = s.ox;
       s.py = s.oy;
     });
@@ -80,106 +72,22 @@
     stops.forEach((s, i) => {
       let n = 0, base = null;
       for (let j = 0; j < i; j++) {
-        if (Math.hypot(s.ox - stops[j].ox, s.oy - stops[j].oy) < 24) { n++; base = base || stops[j]; }
+        if (Math.hypot(s.ox - stops[j].ox, s.oy - stops[j].oy) < FAN_RADIUS) { n++; base = base || stops[j]; }
       }
       if (n) {
         const a = rad(-40 + n * 75);
-        s.px = base.ox + 24 * Math.cos(a);
-        s.py = base.oy + 24 * Math.sin(a);
+        s.px = base.ox + FAN * Math.cos(a);
+        s.py = base.oy + FAN * Math.sin(a);
       }
     });
-    return { scale: scale, cx: cx, cy: cy };
+    return scale;
   }
 
-  function svgMarkup(stops, geo, titleText) {
-    const scale = geo.scale;
-    let bar = NICE_KM[0];
-    NICE_KM.forEach(k => { if (k * scale <= 150) bar = k; });
-    const barPx = bar * scale;
-
-    // Faint grid, one square per scale-bar length, so distances can be read off.
-    const kmLeft = geo.cx - (W / 2) / scale, kmRight = geo.cx + (W / 2) / scale;
-    const kmTop = geo.cy - ((H - BOTTOM) / 2) / scale, kmBottom = geo.cy + ((H - BOTTOM) / 2) / scale;
-    let grid = '';
-    for (let gx = Math.ceil(kmLeft / bar) * bar; gx < kmRight; gx += bar) {
-      const x = r1(W / 2 + (gx - geo.cx) * scale);
-      grid += '<line x1="' + x + '" y1="0" x2="' + x + '" y2="' + H + '"/>';
-    }
-    for (let gy = Math.ceil(kmTop / bar) * bar; gy < kmBottom; gy += bar) {
-      const y = r1((H - BOTTOM) / 2 + (gy - geo.cy) * scale);
-      grid += '<line x1="0" y1="' + y + '" x2="' + W + '" y2="' + y + '"/>';
-    }
-
-    let route = '', arrows = '';
-    for (let i = 1; i < stops.length; i++) {
-      const a = stops[i - 1], b = stops[i];
-      route += '<line x1="' + r1(a.px) + '" y1="' + r1(a.py) + '" x2="' + r1(b.px) + '" y2="' + r1(b.py) + '"/>';
-      const len = Math.hypot(b.px - a.px, b.py - a.py);
-      if (len > 44) {
-        const mx = (a.px + b.px) / 2, my = (a.py + b.py) / 2;
-        const ang = Math.atan2(b.py - a.py, b.px - a.px) * 180 / Math.PI;
-        arrows += '<polygon points="6,0 -5,-5 -5,5" transform="translate(' + r1(mx) + ' ' + r1(my) + ') rotate(' + r1(ang) + ')"/>';
-      }
-    }
-
-    const pins = stops.map((s, i) =>
-      '<g><circle class="daymap__pin" cx="' + r1(s.px) + '" cy="' + r1(s.py) + '" r="13" style="fill:' + accent(s.m) + '"/>' +
-      '<text class="daymap__num" x="' + r1(s.px) + '" y="' + r1(s.py) + '">' + (i + 1) + '</text></g>').join('');
-
-    const sx = 18, sy = H - 12;
-    const scaleBar =
-      '<path class="daymap__scale" d="M' + sx + ' ' + (sy - 5) + 'V' + sy + 'H' + r1(sx + barPx) + 'V' + (sy - 5) + '"/>' +
-      '<text class="daymap__scale-text" x="' + sx + '" y="' + (sy - 9) + '">' + lengthLabel(bar) + '</text>';
-    const north =
-      '<g transform="translate(' + (W - 22) + ' 26)"><path class="daymap__north-arrow" d="M0 -12L6 6L0 2L-6 6Z"/>' +
-      '<text class="daymap__north" x="0" y="22">' + LABELS.north + '</text></g>';
-
-    return '<svg class="daymap__svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(titleText) + '">' +
-      '<title>' + esc(titleText) + '</title>' +
-      '<g class="daymap__grid">' + grid + '</g>' +
-      '<g class="daymap__route">' + route + '</g>' +
-      '<g class="daymap__arrows">' + arrows + '</g>' +
-      pins + scaleBar + north + '</svg>';
-  }
-
-  // Returns the map block for one day, or '' when none of that day's stops has a position.
-  function markup(memories) {
-    const stops = [], missing = [];
-    (memories || []).forEach(m => {
-      const g = geoOf(m);
-      if (g) stops.push({ m: m, g: g }); else missing.push(m);
-    });
-    if (!stops.length) return '';
-
-    const geo = layout(stops);
-    let total = 0;
-    for (let i = 1; i < stops.length; i++) total += distKm(stops[i - 1].g, stops[i].g);
-
-    const count = stops.length + ' ' + (stops.length === 1 ? LABELS.stop : LABELS.stops);
-    const summary = stops.length > 1 ? count + ' · ' + lengthLabel(total) + ' ' + LABELS.straight : count;
-    const titleText = LABELS.title + ': ' + stops.map((s, i) => (i + 1) + ' ' + s.m.title).join(', ');
-
-    const list = stops.map((s, i) =>
-      '<li><a class="daymap__stop" href="#' + esc(s.m.id) + '">' +
-      '<i class="daymap__dot" style="background:' + accent(s.m) + '">' + (i + 1) + '</i>' +
-      '<span class="daymap__stop-title">' + esc(s.m.title) + '</span>' +
-      '<span class="daymap__stop-area label">' + esc(s.m.area) + '</span></a></li>').join('');
-
-    return '<div class="daymap">' +
-      '<div class="daymap__head"><span class="label">' + LABELS.title + '</span>' +
-      '<a class="daymap__link label" href="' + esc(mapsUrl(stops)) + '" target="_blank" rel="noopener">' + LABELS.open + '</a></div>' +
-      '<div class="daymap__canvas" data-stops="' + esc(JSON.stringify(stops.map((s, i) => [s.g[0], s.g[1], i + 1, cats(s.m)[0] || 'default']))) + '">' +
-      svgMarkup(stops, geo, titleText) + '</div>' +
-      '<p class="daymap__summary label">' + esc(summary) + ' · ' + LABELS.note + '</p>' +
-      '<ol class="daymap__stops">' + list + '</ol>' +
-      (missing.length
-        ? '<p class="daymap__missing label">' + LABELS.unmapped + ': ' + missing.map(m => esc(m.title)).join(', ') + '</p>'
-        : '') +
-      '</div>';
-  }
+  const stateOf = (i, cur) => (i === cur ? 'current' : i < cur ? 'done' : 'todo');
+  const pinInner = n => '<span class="daymap__pin-dot">' + n + '</span>';
 
   /* Live map: loads Leaflet and OpenStreetMap tiles when the page allows it.
-     If the tiles cannot load, the sketch above simply stays. */
+     If the tiles cannot load, the sketch simply stays. */
   const LEAFLET = 'vendor/leaflet/'; // Leaflet 1.9.4, bundled in the repo
   let leafletReady = null;
   function loadLeaflet() {
@@ -201,12 +109,82 @@
     return leafletReady;
   }
 
-  function mountOne(box) {
-    if (box.dataset.live) return;
-    box.dataset.live = '1';
-    let pts;
-    try { pts = JSON.parse(box.dataset.stops); } catch (e) { return; }
+  function create(box, memories, options) {
+    const opts = options || {};
+    const stops = [];
+    let unmapped = 0;
+    (memories || []).forEach((m, i) => {
+      const g = geoOf(m);
+      if (g) stops.push({ i: i, m: m, g: g }); else unmapped++;
+    });
+    const handle = { setCurrent: function () {}, destroy: function () {}, href: '', mapped: stops.length };
+    if (!stops.length) {
+      box.innerHTML = '<p class="daymap__empty">' + LABELS.none + '</p>';
+      handle.note = LABELS.none;
+      return handle;
+    }
+
+    const scale = layout(stops);
+    let bar = NICE_KM[0];
+    NICE_KM.forEach(k => { if (k * scale <= 120) bar = k; });
+    const barPx = bar * scale;
+    const unmappedNote = unmapped ? '. ' + unmapped + (unmapped === 1 ? LABELS.noPin : LABELS.noPins) : '';
+    handle.href = mapsUrl(stops);
+    handle.note = LABELS.sketch + unmappedNote;
+    const liveNote = LABELS.live + unmappedNote;
+
+    const line = (from, to) => stops.slice(from, to + 1).map((s, k) => (k ? 'L' : 'M') + r1(s.px) + ' ' + r1(s.py)).join(' ');
+    const label = s => (s.i + 1) + ', ' + s.m.title;
+
+    box.innerHTML =
+      '<div class="daymap__sketch">' +
+        '<svg class="daymap__svg" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true">' +
+          '<defs><pattern id="daymap-grid" width="' + r1(barPx) + '" height="' + r1(barPx) + '" patternUnits="userSpaceOnUse">' +
+            '<path class="daymap__grid" d="M' + r1(barPx) + ' 0H0V' + r1(barPx) + '"/></pattern></defs>' +
+          '<rect width="' + W + '" height="' + H + '" fill="url(#daymap-grid)"/>' +
+          '<path class="daymap__todo" d=""/><path class="daymap__done" d=""/>' +
+          '<path class="daymap__scalebar" d="M16 ' + (H - 12) + 'V' + (H - 6) + 'H' + r1(16 + barPx) + 'V' + (H - 12) + '"/>' +
+          '<text class="daymap__scaletext" x="16" y="' + (H - 18) + '">' + (bar < 1 ? Math.round(bar * 1000) + ' m' : bar + ' km') + '</text>' +
+          '<g class="daymap__northmark" transform="translate(' + (W - 22) + ' 28)"><path d="M0 -12L6 6L0 2L-6 6Z"/><text x="0" y="26">' + LABELS.north + '</text></g>' +
+        '</svg>' +
+        stops.map(s =>
+          '<button type="button" class="daymap__pin" data-stop="' + s.i + '" data-state="todo" aria-label="' + esc(label(s)) + '"' +
+          ' style="left:' + r1(s.px / W * 100) + '%;top:' + r1(s.py / H * 100) + '%">' + pinInner(s.i + 1) + '</button>').join('') +
+      '</div>';
+
+    const todoPath = box.querySelector('.daymap__todo');
+    const donePath = box.querySelector('.daymap__done');
+    const pins = Array.from(box.querySelectorAll('.daymap__pin'));
+    let live = null;      // { map, markers, todo, done }
+    let current = -1;
+    let destroyed = false;
+
+    const pick = i => { if (opts.onPick) opts.onPick(i); };
+    pins.forEach(b => b.addEventListener('click', () => pick(Number(b.dataset.stop))));
+
+    function paint() {
+      // k = the last mapped stop at or before the current one
+      let k = -1;
+      stops.forEach((s, n) => { if (s.i <= current) k = n; });
+      const last = stops.length - 1;
+      const from = Math.max(k, 0);
+      todoPath.setAttribute('d', last > from ? line(from, last) : '');
+      donePath.setAttribute('d', k >= 1 ? line(0, k) : '');
+      pins.forEach(b => b.setAttribute('data-state', stateOf(Number(b.dataset.stop), current)));
+      if (live) {
+        const ll = stops.map(s => [s.g[0], s.g[1]]);
+        live.todo.setLatLngs(last > from ? ll.slice(from) : []);
+        live.done.setLatLngs(k >= 1 ? ll.slice(0, k + 1) : []);
+        live.markers.forEach((mk, n) => {
+          const el = mk.getElement();
+          if (el) el.setAttribute('data-state', stateOf(stops[n].i, current));
+        });
+      }
+    }
+    handle.setCurrent = i => { current = i; paint(); };
+
     loadLeaflet().then(() => {
+      if (destroyed) return;
       const L = window.L;
       const el = document.createElement('div');
       el.className = 'daymap__live';
@@ -217,37 +195,48 @@
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
       }).addTo(map);
-      const ll = pts.map(p => [p[0], p[1]]);
-      // The route takes its colour from the --color-highlight token, so it follows the theme.
-      const route = getComputedStyle(box).getPropertyValue('--color-highlight').trim() || '#0E8F8C';
-      if (ll.length > 1) L.polyline(ll, { color: route, weight: 3, dashArray: '7 6' }).addTo(map);
-      pts.forEach(p => L.marker([p[0], p[1]], {
-        icon: L.divIcon({
-          className: 'daymap__marker',
-          html: '<span style="background:var(--category-' + esc(p[3]) + ',var(--category-default))">' + p[2] + '</span>',
-          iconSize: [26, 26], iconAnchor: [13, 13]   // match --size-pin in css/tokens.css
-        })
-      }).addTo(map));
-      map.fitBounds(ll, { padding: [36, 36], maxZoom: 16 });
+      const ll = stops.map(s => [s.g[0], s.g[1]]);
+      // Route colours come from design tokens, so they follow the theme.
+      const css = getComputedStyle(box);
+      const todoColor = css.getPropertyValue('--color-text-muted').trim() || '#4D5664';
+      const doneColor = css.getPropertyValue('--color-done').trim() || '#1F4E5F';
+      const todo = L.polyline([], { color: todoColor, weight: 3, dashArray: '7 6' }).addTo(map);
+      const done = L.polyline([], { color: doneColor, weight: 6 }).addTo(map);
+      const markers = stops.map(s => {
+        const mk = L.marker([s.g[0], s.g[1]], {
+          icon: L.divIcon({
+            className: 'daymap__marker',
+            html: '<button type="button" class="daymap__pin" aria-label="' + esc(label(s)) + '">' + pinInner(s.i + 1) + '</button>',
+            iconSize: [44, 44], iconAnchor: [22, 22]
+          }),
+          keyboard: false
+        }).addTo(map);
+        mk.on('click', () => pick(s.i));
+        return mk;
+      });
+      map.fitBounds(ll, { padding: [40, 40], maxZoom: 16 });
+      live = { map: map, markers: markers, todo: todo, done: done };
       let shown = false;
       const show = () => {
-        if (shown) return;
+        if (shown || destroyed) return;
         shown = true;
         el.style.visibility = '';
-        const svg = box.querySelector('.daymap__svg');
-        if (svg) svg.style.display = 'none';
-        const note = box.parentNode.querySelector('.daymap__summary');
-        if (note) note.textContent = note.textContent.replace(LABELS.note, LABELS.liveNote);
+        const sketch = box.querySelector('.daymap__sketch');
+        if (sketch) sketch.style.display = 'none';
         map.invalidateSize();
+        paint();
+        if (opts.onNote) opts.onNote(liveNote);
       };
       layer.on('tileload', show);
-      setTimeout(() => { if (!shown) { map.remove(); el.remove(); } }, 15000);
+      setTimeout(() => { if (!shown) { map.remove(); el.remove(); live = null; } }, 15000);
     }).catch(() => {});
+
+    handle.destroy = () => {
+      destroyed = true;
+      if (live) { live.map.remove(); live = null; }
+    };
+    return handle;
   }
 
-  function mount() {
-    document.querySelectorAll('.daymap__canvas').forEach(mountOne);
-  }
-
-  window.DayMap = { markup: markup, mount: mount };
+  window.DayMap = { create: create, labels: LABELS };
 })();
