@@ -167,15 +167,11 @@
         '<ul class="stop__upcoming">' + d.upcoming.map(u =>
           '<li><h3 class="stop__title">' + esc(u.title) + '</h3><p class="stop__lead">' + esc(u.hint) + '</p></li>').join('') + '</ul></section>';
 
-    const nameOfPanel = q => q.type === 'day'
-      ? (days[q.di].kind === 'day' ? 'Day ' + days[q.di].n + ', ' + days[q.di].title : days[q.di].title)
-      : q.type === 'list' ? L.listTitle : days[q.di].memories[q.si].title;
-
     // On narrow screens there is no bottom bar and no Previous / Next: you scroll. The one extra control is a
     // "Show map" button at the end of each panel, which opens the map and stop list sheet. Hidden on wide screens.
     const navMarkup = () => '<button type="button" class="showmap" data-nav="map">' + esc(L.showMap) + '</button>';
 
-    const stageHtml = panels.map((p, i) => {
+    const stageHtml = panels.map(p => {
       const d = days[p.di];
       const html = p.type === 'day' ? openerMarkup(d, p.di)
         : p.type === 'list' ? listMarkup(d, p.di)
