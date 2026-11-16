@@ -533,9 +533,16 @@ a.badge:focus-visible,.lightbox button:focus-visible{outline:var(--focus-width) 
     transition:transform var(--motion-fast) ease,visibility 0s linear var(--motion-fast);
   }
   .dayview[data-sheet="open"] .dayview__side{transform:none;visibility:visible;transition:transform var(--motion-fast) ease}
-  .dayview__scrim{position:fixed;inset:0;z-index:29;padding:0;border:0;background:rgba(10,14,20,.55)}
+  /* The whole sheet scrolls as one, so a swipe anywhere on it (heading, map or stop list) scrolls the sheet.
+     A separate scrolling stop list was only a thin strip under the map on phones, and swipes elsewhere
+     fell through to the page. overscroll-behavior keeps the page still when the sheet reaches its end. */
+  .dayview__side{overflow-y:auto;overscroll-behavior:contain}
+  .dayview__railwrap{flex:none;overflow:visible}
+  .dayview__map{isolation:isolate}
+  .dayview__scrim{position:fixed;inset:0;z-index:29;padding:0;border:0;background:rgba(10,14,20,.55);touch-action:none}
   .dayview[data-sheet="open"] .dayview__scrim{display:block}
-  .dayview__sidehead{padding:var(--space-3) var(--space-4) var(--space-3)}
+  /* The heading and its Close button stay in view while the sheet scrolls */
+  .dayview__sidehead{padding:var(--space-3) var(--space-4) var(--space-3);position:sticky;top:0;z-index:2;background:var(--color-surface)}
   .dayview__close{
     display:flex;align-items:center;justify-content:center;align-self:flex-end;min-width:64px;height:var(--size-tap);margin-right:calc(-1 * var(--space-2));
     border:0;background:transparent;color:var(--color-highlight);font:inherit;font-weight:var(--weight-heading);cursor:pointer;
