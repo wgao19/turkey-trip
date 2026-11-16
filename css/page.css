@@ -506,6 +506,9 @@ a.badge:focus-visible,.lightbox button:focus-visible{outline:var(--focus-width) 
 .dayview__pips i[data-state="current"]{background:var(--color-action)}
 .dayview__sheetbtn{display:none}
 
+/* Wide screens have the map beside the story already; the Show map button is for narrow screens only */
+.showmap{display:none}
+
 /* Narrow screens: the map and stop list become a sheet that opens from the Map button. */
 @media (max-width:1099px){
   .topbar{
@@ -538,12 +541,14 @@ a.badge:focus-visible,.lightbox button:focus-visible{outline:var(--focus-width) 
     border:0;background:transparent;color:var(--color-highlight);font:inherit;font-weight:var(--weight-heading);cursor:pointer;
   }
   .dayview__mapwrap{padding:0 var(--space-4)}
-  .dayview__bar{padding:10px var(--space-3);gap:var(--space-2)}
-  .dayview__prev,.dayview__next{flex:1;min-height:52px;padding:0 var(--space-3);gap:var(--space-2)}
-  .dayview__prev strong,.dayview__next strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dayview__next{justify-content:space-between}
-  .dayview__wheretext,.dayview__pips{display:none}
-  .dayview__sheetbtn{display:inline-flex;align-items:center;min-height:var(--size-tap);padding:0 var(--space-4);border:var(--border-width) solid var(--color-border);background:transparent;color:var(--color-text);font:inherit;font-weight:var(--weight-heading);cursor:pointer}
+  /* No bottom bar and no Previous / Next on narrow screens: the content gets the whole screen, and you scroll. */
+  .dayview__bar{display:none}
+  .showmap{
+    display:flex;align-items:center;align-self:start;justify-self:start;grid-column:1 / -1;min-height:var(--size-tap);padding:0;
+    border:0;background:transparent;color:inherit;font:inherit;font-weight:var(--weight-strong);
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer;
+  }
+  .showmap:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:2px}
 
   .dayopen{grid-template-columns:minmax(0,1fr);gap:22px;padding:28px var(--space-5);align-content:center}
   .dayopen__cover{order:-1;max-width:220px}

@@ -28,6 +28,7 @@
     endOfTrip: 'End',
     days: 'Days',
     mapButton: 'Map',
+    showMap: 'See the day’s map',
     closeMap: 'Close',
     list: 'List',
     stillToFind: 'Still to find',
@@ -166,11 +167,16 @@
         '<ul class="stop__upcoming">' + d.upcoming.map(u =>
           '<li><h3 class="stop__title">' + esc(u.title) + '</h3><p class="stop__lead">' + esc(u.hint) + '</p></li>').join('') + '</ul></section>';
 
+    // On narrow screens there is no bottom bar and no Previous / Next: you scroll. The one extra control is a
+    // "Show map" button at the end of each panel, which opens the map and stop list sheet. Hidden on wide screens.
+    const navMarkup = () => '<button type="button" class="showmap" data-nav="map">' + esc(L.showMap) + '</button>';
+
     const stageHtml = panels.map(p => {
       const d = days[p.di];
-      if (p.type === 'day') return openerMarkup(d, p.di);
-      if (p.type === 'list') return listMarkup(d, p.di);
-      return stopMarkup(d.memories[p.si], p.si, d);
+      const html = p.type === 'day' ? openerMarkup(d, p.di)
+        : p.type === 'list' ? listMarkup(d, p.di)
+        : stopMarkup(d.memories[p.si], p.si, d);
+      return html.replace(/<\/section>$/, navMarkup() + '</section>');
     }).join('');
 
     const arrowDown = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
@@ -310,6 +316,11 @@
       });
     }, { passive: true });
 
+    stage.addEventListener('click', e => {
+      const b = e.target.closest && e.target.closest('[data-nav]');
+      if (!b) return;
+      openSheet();
+    });
     els.prev.addEventListener('click', () => goTo(cur - 1));
     els.next.addEventListener('click', () => goTo(cur + 1));
 

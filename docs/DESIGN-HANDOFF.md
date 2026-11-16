@@ -56,7 +56,7 @@ Archivo's width axis is set with `font-stretch`, in section 15 of `page.css`. Th
 - **Snap.** `scroll-snap-type: y proximity` on the stage, `scroll-snap-align: start` on panels. Panels are `min-height: 100%`, so a long story scrolls inside its panel and then snaps on. The photo column is `position: sticky`, so photos stay while the story scrolls.
 - **Page scroll.** The stage does not trap scrolling. At its end the wheel moves on to the page below it (progress, notes, badges).
 - **Filters** are hidden in the day view on purpose: a filtered day would break the route and the stop numbers. They apply in By place.
-- **Narrow screens (under 1100px).** One breakpoint covers the banner, the day strip (a horizontal scroll under the banner), and the side panel, which becomes a bottom sheet opened from the Map button. The sheet closes on the scrim, the Close button, Escape, or choosing a stop.
+- **Narrow screens (under 1100px).** One breakpoint covers the banner, the day strip (a horizontal scroll under the banner), and the side panel, which becomes a bottom sheet opened from the Map button. The sheet closes on the scrim, the Close button, Escape, or choosing a stop. There is no bottom bar and no Previous / Next on narrow screens, so the story gets the whole screen and you just scroll. The only extra control is a "See the day’s map" button (`.showmap`) at the end of each panel, which opens the sheet. Wide screens use the Previous / Next bar under the stage (`.dayview__bar`).
 
 ## Content mapping
 
