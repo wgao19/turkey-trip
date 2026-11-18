@@ -14,6 +14,10 @@ Locally: `python3 -m http.server` in this folder, then open http://localhost:800
 
 The "By day" view draws a route map for each day. It uses [Leaflet](https://leafletjs.com/) (bundled in `vendor/leaflet/`) with standard OpenStreetMap tiles, which need no API key. If the tiles can't load, the page falls back to an offline SVG sketch of the route.
 
+## Previews
+
+Every pull request gets its own preview of the site at `https://wgao19.github.io/turkey-trip/pr-preview/pr-<number>/`. A bot comments the link on the PR once it is up, and the preview is removed when the PR is closed. Merging to `main` publishes the real site. Both run as GitHub Actions (`.github/workflows/`) and publish to the `gh-pages` branch, which GitHub Pages serves.
+
 ## Design
 
 Restyling starts in `css/tokens.css`. See `docs/DESIGN.md` for the guide.
