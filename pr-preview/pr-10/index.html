@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Turkey Trip</title>
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/page.css">
+<link rel="stylesheet" href="css/daymap.css">
+
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+</head>
+<body>
+<!--
+  PAGE SHELL
+  Static structure only. Text and cards are filled in by js/app.js from content/site.json.
+  Elements marked data-slot are where generated content goes: keep the attribute when restyling.
+  Read AGENTS.md before adding content.
+-->
+<script>
+  /* Apply the saved colour theme before the page paints, so there is no flash. js/app.js owns the switch. */
+  try {
+    var t = localStorage.getItem('turkey-trip-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) { /* storage can be blocked */ }
+</script>
+
+<!-- The marbling: stripes in .topbar__marble and .dayopen are warped by this filter. Keep the id. -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <filter id="ebru" x="-10%" y="-60%" width="120%" height="220%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.05" numOctaves="2" seed="7" result="n"></feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="90" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+  </filter>
+</svg>
+
+<header class="topbar">
+  <div class="topbar__marble" aria-hidden="true"></div>
+  <div class="topbar__brand">
+    <p class="topbar__name" data-slot="brand-name"></p>
+    <p class="topbar__eyebrow" data-slot="brand-eyebrow"></p>
+  </div>
+  <div class="topbar__tabs" data-slot="day-tabs"></div>
+  <div class="topbar__tools">
+    <div class="views" role="group" aria-label="Group by" data-slot="views"></div>
+    <button type="button" class="theme-btn" data-slot="theme"></button>
+  </div>
+</header>
+
+<div class="page">
+  <header class="profile">
+    <div class="profile__identity">
+      <div class="profile__avatar" data-slot="avatar"><span class="profile__initial" data-slot="initial"></span></div>
+      <div>
+        <p class="profile__eyebrow label" data-slot="eyebrow"></p>
+        <h1 class="profile__name" data-slot="name"></h1>
+        <p class="profile__tagline" data-slot="tagline"></p>
+      </div>
+    </div>
+    <dl class="profile__stats" data-slot="stats"></dl>
+  </header>
+
+  <section class="collection-bar" aria-label="Collection progress and filters">
+    <div class="progress">
+      <ol class="progress__slots" data-slot="progress-slots"></ol>
+      <p class="progress__caption label" data-slot="progress-caption"></p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter by category" data-slot="filters"></div>
+  </section>
+
+  <main class="trips" data-slot="trips">
+    <p class="status-message">Loading the collection…</p>
+  </main>
+
+  <section class="notes">
+    <h2 class="notes__title">Picked up along the way</h2>
+    <ul class="notes__list" data-slot="notes"></ul>
+  </section>
+
+  <section class="badges" aria-labelledby="badges-title">
+    <div class="badges__header">
+      <h2 class="badges__title" id="badges-title">Badges</h2>
+      <p class="badges__caption label" data-slot="badges-caption"></p>
+    </div>
+    <ul class="badge-list" data-slot="badges"></ul>
+  </section>
+
+  <p class="page__footer">To add more, send Claude photos or ask it to pull in another chat.</p>
+</div>
+
+<script src="js/emblems.js"></script>
+<script src="js/daymap.js"></script>
+<script src="js/dayview.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

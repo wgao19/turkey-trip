@@ -1,0 +1,45 @@
+/*
+  DAY MAP
+  Styles the map that js/daymap.js draws beside the day view: an SVG route sketch with numbered pins,
+  and the live Leaflet map that replaces it where OpenStreetMap tiles can load.
+  Colours, fonts, spacing and shape all come from the tokens in css/tokens.css.
+  Pin state is the data-state attribute: "current", "done" (already passed) or "todo".
+  The same attribute is set on the live map's marker, so both maps share these rules.
+*/
+.daymap__sketch{position:absolute;inset:0}
+.daymap__svg{position:absolute;inset:0;width:100%;height:100%}
+.daymap__grid{fill:none;stroke:var(--color-border);stroke-width:1}
+.daymap__todo{fill:none;stroke:var(--color-text-muted);stroke-width:3;stroke-dasharray:8 7;stroke-linecap:round}
+.daymap__done{fill:none;stroke:var(--color-done);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.daymap__scalebar{fill:none;stroke:var(--color-text-muted);stroke-width:2}
+.daymap__scaletext{fill:var(--color-text-muted);font:17px var(--font-label)}
+.daymap__northmark path{fill:var(--color-text-muted)}
+.daymap__northmark text{fill:var(--color-text-muted);font:17px var(--font-label);text-anchor:middle}
+.daymap__empty{margin:0;padding:var(--space-4);color:var(--color-text-muted)}
+
+/* Pins: a 44px tap target around a round marker */
+.daymap__pin{
+  position:absolute;transform:translate(-50%,-50%);
+  width:var(--size-tap);height:var(--size-tap);padding:0;border:0;background:transparent;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font:inherit;
+}
+.daymap__pin-dot{
+  display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+  width:var(--size-pin);height:var(--size-pin);border-radius:50%;
+  background:var(--color-surface);color:var(--color-text);border:2px solid var(--color-text);
+  font:var(--weight-strong) var(--text-pin) var(--font-body);
+  box-shadow:var(--shadow-pin);
+}
+[data-state="done"] .daymap__pin-dot{background:var(--color-done);color:var(--color-on-done);border-color:transparent}
+[data-state="current"] .daymap__pin-dot{
+  width:var(--size-pin-current);height:var(--size-pin-current);
+  background:var(--color-action);color:var(--color-on-action);border-color:transparent;
+}
+.daymap__pin[data-state="current"]{z-index:2}
+.daymap__pin:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:-4px;border-radius:50%}
+
+/* Live map */
+.daymap__live{position:absolute;inset:0;z-index:0;background:var(--color-surface-alt)}
+.daymap__marker .daymap__pin{position:static;transform:none}
+.daymap__marker .daymap__pin-dot{border-color:var(--color-pin-outline)}
+.daymap__marker[data-state="todo"] .daymap__pin-dot{border-color:var(--color-text)}
