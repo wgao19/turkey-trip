@@ -120,11 +120,9 @@
       "collectedOn": "25 Oct",
       "status": "collected",
       "emblem": "cistern",
-      "summary": "A sunken Byzantine water store, about 138 m by 65 m, held up by 336 marble columns.",
+      "summary": "A sunken Byzantine water store, about 138 m by 65 m, held up by 336 marble columns. I was quite amused at the effort in making this water tank so beautiful. If it's commissioned in our day, it'll just look like... a water tank",
       "details": [
-        "Two columns in the far corner rest on Medusa heads, one sideways and one upside down. Nobody knows why. Coins cover the floor around the upside-down one.",
-        "Forgotten for centuries, until Petrus Gyllius traced it in 1545 after locals pulled fish up through their basement floors.",
-        "Carp swim in the shallow water. It also appears in From Russia with Love."
+        "Two columns in the far corner rest on Medusa heads, one sideways and one upside down. Nobody knows why. Coins cover the floor around the upside-down one."
       ],
       "media": [
         {
@@ -163,11 +161,7 @@
       "status": "collected",
       "emblem": "suleymaniye",
       "summary": "Sinan’s mosque for Suleiman the Magnificent, on the highest of the seven hills above the Golden Horn.",
-      "details": [
-        "Four minarets carry ten balconies, a nod to Suleiman being the tenth Ottoman sultan.",
-        "Air channels carried candle soot to a room above the entrance, where it was collected for ink.",
-        "Suleiman and Hürrem Sultan rest in the garden tombs. Sinan’s own modest tomb sits just outside the north wall."
-      ],
+      "details": [],
       "media": [
         {
           "type": "video",
@@ -269,12 +263,12 @@
       "date": "2026-10-25",
       "collectedOn": "25 Oct",
       "status": "collected",
-      "summary": "Open-air second-hand booksellers under plane trees, with books laid out on the ground between the stalls.",
+      "summary": "One of the stops was a book market in our city tour. I wish I spent more time there.",
       "details": [],
       "media": [
         {
           "file": "photos/old-city-book-market-1.jpg",
-          "alt": "Selfie of Szu Ker and Wei at an open-air book market with books spread on the ground and a Turkish flag",
+          "alt": "Selfie of Szu Ker and Wei at an open-air book market",
           "takenAt": "2026-10-25T13:15:16+03:00",
           "geo": [
             41.01,
@@ -295,8 +289,8 @@
       "period": "Modern day",
       "date": "2026-10-25",
       "collectedOn": "25 Oct",
-      "status": "collected",
-      "summary": "An evening on the newer, European side of the city, with the floodlit Galata Tower right beside the terrace.",
+      "status": "partial",
+      "summary": "If you don't want to pay for Galata Tower entrance fee, you can consider paying for some overpriced drink at this cafe next to it to get the same view of the other side.",
       "details": [],
       "media": [
         {
@@ -389,11 +383,8 @@
       "date": "2026-10-25",
       "collectedOn": "25 Oct",
       "status": "collected",
-      "summary": "The famous fish wrap, eaten on the first day after the book market and the Süleymaniye. A short clip of the first bites.",
-      "details": [
-        "Balık dürüm is grilled or fried fish wrapped in thin flatbread with salad.",
-        "Filmed at a street-side table with stone walls behind."
-      ],
+      "summary": "First surprising find of the food. The fish was tender and spiced with cumin.",
+      "details": [],
       "media": [
         {
           "type": "video",
